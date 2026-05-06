@@ -57,7 +57,7 @@ Transcript:
 """${transcript}"""`;
 
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -106,10 +106,18 @@ Transcript:
     const rawText = data.candidates?.[0]?.content?.parts?.find((part: { text?: string }) => typeof part.text === "string")?.text;
 
     if (!rawText) {
+      console.error("Gemini empty response data:", JSON.stringify(data));
       return res.status(500).json({ error: "Gemini returned an empty response." });
     }
 
-    return res.status(200).json({ review: JSON.parse(rawText) });
+    try {
+      // Clean up markdown if present
+      const cleaned = rawText.replace(/```json\n?/, "").replace(/\n?```/, "").trim();
+      return res.status(200).json({ review: JSON.parse(cleaned) });
+    } catch (parseError) {
+      console.error("Failed to parse Gemini JSON. Raw text:", rawText);
+      return res.status(500).json({ error: "Gemini returned invalid JSON format." });
+    }
   } catch (error) {
     console.error("review-pitch error:", error);
     return res.status(500).json({ error: error instanceof Error ? error.message : "Unknown error" });

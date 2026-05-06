@@ -28,9 +28,9 @@ export function StepBudget() {
   });
 
   const valid = !over && violations.length === 0;
-  const data = FIELDS.filter(f => budget[f.key] > 0).map(f => ({
-    name: f.label, value: budget[f.key], color: f.color,
-  }));
+  const data: { name: string; value: number; color: string }[] = FIELDS
+    .filter(f => budget[f.key] > 0)
+    .map(f => ({ name: f.label, value: budget[f.key], color: f.color }));
   if (remaining > 0) data.push({ name: "Unallocated", value: remaining, color: "hsl(220 16% 88%)" });
 
   return (

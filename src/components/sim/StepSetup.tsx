@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Cake, BookOpen, Gamepad2, ToyBrick, Sparkles, ArrowRight } from "lucide-react";
+import { Mascot } from "./Mascot";
 
 const SHOPS: { type: ShopType; icon: any; desc: string }[] = [
   { type: "Bakery",      icon: Cake,      desc: "Fresh baked goods, daily inventory" },
@@ -19,11 +20,21 @@ export function StepSetup() {
 
   return (
     <div className="space-y-8 animate-fade-up">
-      <header>
-        <p className="text-sm font-medium text-primary">Step 1 of 5</p>
-        <h2 className="mt-1 text-3xl font-bold tracking-tight">Set up your venture</h2>
-        <p className="mt-2 text-muted-foreground">Name your team and choose the kind of shop you'll operate for the next 6 months.</p>
-      </header>
+      <div className="relative overflow-hidden rounded-2xl border bg-gradient-to-br from-accent/40 via-background to-background p-8">
+        <div className="absolute inset-0 bg-grid opacity-30" />
+        <div className="relative">
+          <p className="text-sm font-medium text-primary">Step 1 of 5</p>
+          <h2 className="mt-1 text-4xl font-bold tracking-tight">Set up your venture</h2>
+          <p className="mt-2 max-w-xl text-muted-foreground">
+            Name your team and choose the kind of shop you'll operate for the next 6 months.
+          </p>
+        </div>
+      </div>
+
+      <Mascot
+        speakKey="setup-intro"
+        message="Welcome to Design Your Dream Shop! I'm Penny, your business coach. First, name your team and pick the kind of shop you'd love to run. Each shop has its own personality."
+      />
 
       <Card className="p-6 shadow-soft">
         <div className="grid gap-6 md:grid-cols-2">

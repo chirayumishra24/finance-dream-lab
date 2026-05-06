@@ -6,7 +6,7 @@ const STEPS = [
   { n: 1, label: "Budget" },
   { n: 2, label: "Simulate" },
   { n: 3, label: "Analytics" },
-  { n: 4, label: "Summary" },
+  { n: 4, label: "Pitch" },
 ];
 
 export function Stepper() {

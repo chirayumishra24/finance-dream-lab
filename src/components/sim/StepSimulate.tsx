@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSim, formatINR, formatCompact, EVENT_META, EventType } from "@/lib/simStore";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,20 +6,32 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, ArrowRight, Play, RotateCcw, TrendingUp, TrendingDown } from "lucide-react";
+import { ArrowLeft, ArrowRight, Play, RotateCcw, TrendingUp, TrendingDown, Zap } from "lucide-react";
+import { Mascot } from "./Mascot";
+import { ChallengeDialog } from "./ChallengeDialog";
 
 export function StepSimulate() {
-  const { months, currentMonth, runMonth, setStep, teacherMode, toggleTeacher, scenarios, setScenario, resetSim, budget } = useSim();
+  const {
+    months, currentMonth, runMonth, setStep, teacherMode, toggleTeacher,
+    scenarios, setScenario, resetSim, budget, pendingChallenge, setPendingChallenge,
+  } = useSim();
   const [revenue, setRevenue] = useState(350_000);
   const [misc, setMisc] = useState(20_000);
-  const [event, setEvent] = useState<EventType>("none");
+  const [showChallenge, setShowChallenge] = useState(false);
 
   const finished = currentMonth > 6;
   const cumulative = months.reduce((a, m) => a + m.profit, 0);
 
+  // Auto-open challenge dialog for the next month when teacher mode is on.
+  useEffect(() => {
+    if (teacherMode && !finished && pendingChallenge === null) {
+      setShowChallenge(true);
+    }
+  }, [teacherMode, finished, pendingChallenge, currentMonth]);
+
   const handleRun = () => {
-    runMonth({ revenue, misc, event: teacherMode ? event : undefined });
+    runMonth({ revenue, misc, event: teacherMode && pendingChallenge ? pendingChallenge : undefined });
+    setPendingChallenge(null);
   };
 
   return (
@@ -35,6 +47,15 @@ export function StepSimulate() {
           <Tile label="Cumulative P/L" value={formatCompact(cumulative)} tone={cumulative >= 0 ? "success" : "danger"} />
         </div>
       </header>
+
+      <Mascot
+        speakKey={`simulate-${currentMonth}`}
+        message={
+          finished
+            ? "You've made it through six months — incredible work! Head to Analytics to see how it all played out."
+            : `Month ${currentMonth}. Set your projected revenue, account for any miscellaneous costs, then hit Run Month. Random events keep things interesting.`
+        }
+      />
 
       <div className="grid gap-6 lg:grid-cols-[380px,1fr]">
         {/* Controls */}
@@ -71,23 +92,19 @@ export function StepSimulate() {
 
           <div className="flex items-center justify-between rounded-md border p-3">
             <div>
-              <div className="text-sm font-medium">Teacher Mode</div>
-              <div className="text-xs text-muted-foreground">Manually pick event</div>
+              <div className="text-sm font-medium">Challenge Mode</div>
+              <div className="text-xs text-muted-foreground">A pop-up brief at the start of every month</div>
             </div>
             <Switch checked={teacherMode} onCheckedChange={toggleTeacher} />
           </div>
 
-          {teacherMode && (
-            <div className="space-y-2 animate-fade-in">
-              <Label>Assign event</Label>
-              <Select value={event} onValueChange={(v) => setEvent(v as EventType)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {Object.entries(EVENT_META).map(([k, v]) => (
-                    <SelectItem key={k} value={k}>{v.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+          {teacherMode && pendingChallenge && (
+            <div className="flex items-center justify-between rounded-md border border-primary/30 bg-accent/50 p-3 text-sm animate-fade-in">
+              <div className="flex items-center gap-2">
+                <Zap className="h-4 w-4 text-primary" />
+                <span className="font-medium">Challenge ready</span>
+              </div>
+              <span className="text-xs text-muted-foreground">{EVENT_META[pendingChallenge].label}</span>
             </div>
           )}
 
@@ -162,6 +179,15 @@ export function StepSimulate() {
           View Analytics <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </div>
+
+      <ChallengeDialog
+        open={showChallenge}
+        monthNumber={Math.min(currentMonth, 6)}
+        onAccept={(ev: EventType) => {
+          setPendingChallenge(ev);
+          setShowChallenge(false);
+        }}
+      />
     </div>
   );
 }

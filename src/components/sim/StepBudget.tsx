@@ -49,6 +49,11 @@ export function StepBudget() {
         </div>
       </header>
 
+      <Mascot
+        speakKey="budget-intro"
+        message="Now the fun part — money! You have twenty lakh rupees. Spread it wisely between rent, inventory, staff, decoration, and marketing. Stay within each range, and don't overshoot the total."
+      />
+
       <div className="grid gap-6 lg:grid-cols-[1fr,360px]">
         <div className="space-y-4">
           {FIELDS.map(f => {

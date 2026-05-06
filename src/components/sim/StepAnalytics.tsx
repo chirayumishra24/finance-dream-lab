@@ -35,6 +35,11 @@ export function StepAnalytics() {
         <p className="mt-2 text-muted-foreground">Profit trajectory and cumulative position over the simulated period.</p>
       </header>
 
+      <Mascot
+        speakKey="analytics-intro"
+        message="Time to read the story your numbers tell. Look at when you peaked, when you struggled, and whether you reached break-even. These insights will fuel your final pitch."
+      />
+
       <div className="grid gap-4 sm:grid-cols-4">
         <KPI label="Final P/L" value={formatCompact(total)} tone={total >= 0 ? "success" : "danger"} />
         <KPI label="Best Month" value={best ? `M${best.month} · ${formatCompact(best.profit)}` : "—"} tone="success" />

@@ -1,15 +1,29 @@
+import { useState, type ReactNode } from "react";
 import { useSim, formatINR, formatCompact } from "@/lib/simStore";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Lightbulb, Palette, Sparkles } from "lucide-react";
 import {
   ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
   ReferenceLine, Area, ComposedChart,
 } from "recharts";
 import { Mascot } from "./Mascot";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export function StepAnalytics() {
-  const { months, setStep } = useSim();
+  const {
+    months,
+    setStep,
+    teamName,
+    shopType,
+    customShop,
+    budget,
+    scenarios,
+    activityAnalysis,
+    setActivityAnalysis,
+  } = useSim();
+  const [analyzing, setAnalyzing] = useState(false);
 
   let cum = 0;
   const data = months.map((m) => {
@@ -27,6 +41,34 @@ export function StepAnalytics() {
   const best = months.reduce((b, m) => (m.profit > (b?.profit ?? -Infinity) ? m : b), months[0]);
   const worst = months.reduce((b, m) => (m.profit < (b?.profit ?? Infinity) ? m : b), months[0]);
   const breakEvenIdx = data.findIndex(d => d.cumulative >= 0);
+  const shopName = shopType === "Custom" ? customShop || "Custom Shop" : shopType;
+
+  const handleAnalyze = async () => {
+    setAnalyzing(true);
+
+    try {
+      const { data: response, error } = await supabase.functions.invoke("analyze-activity", {
+        body: {
+          teamName,
+          shopName,
+          budget,
+          months,
+          scenarios,
+        },
+      });
+
+      if (error) throw error;
+      if (!response?.analysis) throw new Error("No analysis returned.");
+
+      setActivityAnalysis(response.analysis);
+      toast.success("Gemini analysis ready");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Could not generate analysis.";
+      toast.error(message);
+    } finally {
+      setAnalyzing(false);
+    }
+  };
 
   return (
     <div className="space-y-8 animate-fade-up">
@@ -96,6 +138,69 @@ export function StepAnalytics() {
         </div>
       </Card>
 
+      <Card className="overflow-hidden border-primary/15 shadow-elev">
+        <div className="bg-gradient-primary px-5 py-4 text-primary-foreground">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="space-y-1">
+              <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] opacity-85">
+                <Sparkles className="h-3.5 w-3.5" />
+                Gemini Analysis
+              </div>
+              <h3 className="text-xl font-semibold">Activity review and visual polish suggestions</h3>
+              <p className="max-w-2xl text-sm text-primary-foreground/80">
+                Generate a concise readout of this team&apos;s performance plus concrete changes that would make the analytics and report screens more visually appealing.
+              </p>
+            </div>
+            <Button
+              onClick={handleAnalyze}
+              disabled={analyzing}
+              variant="secondary"
+              className="border-white/10 bg-white/14 text-white hover:bg-white/20"
+            >
+              <Sparkles className="h-4 w-4" />
+              {analyzing ? "Analyzing..." : activityAnalysis ? "Refresh Analysis" : "Analyze Activity"}
+            </Button>
+          </div>
+        </div>
+
+        <div className="grid gap-5 p-5 lg:grid-cols-[1.1fr_0.9fr]">
+          {activityAnalysis ? (
+            <>
+              <div className="space-y-5">
+                <div className="rounded-2xl border bg-secondary/45 p-4">
+                  <div className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Headline</div>
+                  <h4 className="mt-2 text-xl font-semibold tracking-tight">{activityAnalysis.headline}</h4>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{activityAnalysis.summary}</p>
+                </div>
+
+                <AnalysisBlock
+                  icon={<Lightbulb className="h-4 w-4 text-warning" />}
+                  title="Activity Insights"
+                  items={activityAnalysis.activityInsights}
+                />
+
+                <AnalysisBlock
+                  icon={<Sparkles className="h-4 w-4 text-success" />}
+                  title="Recommended Next Moves"
+                  items={activityAnalysis.actionRecommendations}
+                />
+              </div>
+
+              <AnalysisBlock
+                icon={<Palette className="h-4 w-4 text-primary" />}
+                title="Visual Improvement Ideas"
+                items={activityAnalysis.visualRecommendations}
+                className="h-fit"
+              />
+            </>
+          ) : (
+            <div className="lg:col-span-2 rounded-2xl border border-dashed bg-secondary/30 p-6 text-sm text-muted-foreground">
+              Run Gemini analysis to get a narrative explanation of the activity, specific business follow-ups, and dashboard design changes like annotation points, stronger chart hierarchy, and more purposeful color emphasis.
+            </div>
+          )}
+        </div>
+      </Card>
+
       <div className="flex justify-between">
         <Button variant="outline" onClick={() => setStep(2)}>
           <ArrowLeft className="mr-2 h-4 w-4" /> Back
@@ -104,6 +209,35 @@ export function StepAnalytics() {
           View Summary <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </div>
+    </div>
+  );
+}
+
+function AnalysisBlock({
+  icon,
+  title,
+  items,
+  className = "",
+}: {
+  icon: ReactNode;
+  title: string;
+  items: string[];
+  className?: string;
+}) {
+  return (
+    <div className={`rounded-2xl border bg-card p-4 shadow-sm ${className}`}>
+      <div className="flex items-center gap-2">
+        {icon}
+        <h4 className="font-semibold">{title}</h4>
+      </div>
+      <ul className="mt-4 space-y-3 text-sm leading-6 text-muted-foreground">
+        {items.map((item) => (
+          <li key={item} className="flex gap-3">
+            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary/80" />
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

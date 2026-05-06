@@ -47,6 +47,14 @@ export interface PitchReview {
   summary: string;
 }
 
+export interface ActivityAnalysis {
+  headline: string;
+  summary: string;
+  activityInsights: string[];
+  actionRecommendations: string[];
+  visualRecommendations: string[];
+}
+
 interface State {
   step: Step;
   teamName: string;
@@ -60,6 +68,7 @@ interface State {
   scenarios: { competitor: boolean; rentHike: boolean; onlineBoost: boolean };
   reflection: { challenge: string; improve: string };
   pitch: { transcript: string; durationSec: number; review: PitchReview | null };
+  activityAnalysis: ActivityAnalysis | null;
 
   setStep: (s: Step) => void;
   setTeam: (name: string) => void;
@@ -72,6 +81,7 @@ interface State {
   setScenario: (k: keyof State["scenarios"], v: boolean) => void;
   setReflection: (r: Partial<State["reflection"]>) => void;
   setPitch: (p: Partial<State["pitch"]>) => void;
+  setActivityAnalysis: (a: ActivityAnalysis | null) => void;
 }
 
 const initialBudget: Budget = {
@@ -107,17 +117,19 @@ export const useSim = create<State>()(
       scenarios: { competitor: false, rentHike: false, onlineBoost: false },
       reflection: { challenge: "", improve: "" },
       pitch: { transcript: "", durationSec: 0, review: null },
+      activityAnalysis: null,
 
       setStep: (step) => set({ step }),
-      setTeam: (teamName) => set({ teamName }),
+      setTeam: (teamName) => set({ teamName, activityAnalysis: null }),
       setShop: (shopType, customShop) =>
-        set({ shopType, customShop: customShop ?? get().customShop }),
-      setBudget: (b) => set({ budget: { ...get().budget, ...b } }),
+        set({ shopType, customShop: customShop ?? get().customShop, activityAnalysis: null }),
+      setBudget: (b) => set({ budget: { ...get().budget, ...b }, activityAnalysis: null }),
       toggleTeacher: () => set({ teacherMode: !get().teacherMode, pendingChallenge: null }),
       setPendingChallenge: (e) => set({ pendingChallenge: e }),
-      setScenario: (k, v) => set({ scenarios: { ...get().scenarios, [k]: v } }),
+      setScenario: (k, v) => set({ scenarios: { ...get().scenarios, [k]: v }, activityAnalysis: null }),
       setReflection: (r) => set({ reflection: { ...get().reflection, ...r } }),
       setPitch: (p) => set({ pitch: { ...get().pitch, ...p } }),
+      setActivityAnalysis: (activityAnalysis) => set({ activityAnalysis }),
 
       runMonth: ({ revenue, misc, event }) => {
         const { months, currentMonth, budget, scenarios, teacherMode } = get();
@@ -152,7 +164,7 @@ export const useSim = create<State>()(
           misc,
         };
 
-        set({ months: [...months, result], currentMonth: currentMonth + 1 });
+        set({ months: [...months, result], currentMonth: currentMonth + 1, activityAnalysis: null });
       },
 
       resetSim: () =>
@@ -163,6 +175,7 @@ export const useSim = create<State>()(
           pendingChallenge: null,
           reflection: { challenge: "", improve: "" },
           pitch: { transcript: "", durationSec: 0, review: null },
+          activityAnalysis: null,
         }),
     }),
     { name: "design-shop-sim" },

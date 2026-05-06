@@ -1,15 +1,16 @@
+import type { ReactNode } from "react";
 import { useSim, formatINR, formatCompact, EVENT_META } from "@/lib/simStore";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Maximize2, Printer, Share2 } from "lucide-react";
+import { ArrowLeft, Lightbulb, Maximize2, Palette, Printer, Share2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { Mascot } from "./Mascot";
 import { PitchRecorder } from "./PitchRecorder";
 
 export function StepSummary() {
-  const { teamName, shopType, customShop, budget, months, reflection, setReflection, setStep } = useSim();
+  const { teamName, shopType, customShop, budget, months, reflection, activityAnalysis, setReflection, setStep } = useSim();
   const total = months.reduce((a, m) => a + m.profit, 0);
   const shopName = shopType === "Custom" ? customShop || "Custom Shop" : shopType;
 
@@ -124,6 +125,37 @@ export function StepSummary() {
             </div>
           </div>
         </Card>
+
+        {activityAnalysis && (
+          <Card className="overflow-hidden p-0 shadow-elev">
+            <div className="bg-gradient-primary p-6 text-primary-foreground">
+              <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] opacity-80">
+                <Sparkles className="h-3.5 w-3.5" />
+                Gemini Activity Review
+              </div>
+              <h3 className="mt-2 text-2xl font-semibold tracking-tight">{activityAnalysis.headline}</h3>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-primary-foreground/85">{activityAnalysis.summary}</p>
+            </div>
+
+            <div className="grid gap-6 p-6 lg:grid-cols-3">
+              <SummaryList
+                icon={<Lightbulb className="h-4 w-4 text-warning" />}
+                title="Insights"
+                items={activityAnalysis.activityInsights}
+              />
+              <SummaryList
+                icon={<Sparkles className="h-4 w-4 text-success" />}
+                title="Next Moves"
+                items={activityAnalysis.actionRecommendations}
+              />
+              <SummaryList
+                icon={<Palette className="h-4 w-4 text-primary" />}
+                title="Visual Improvements"
+                items={activityAnalysis.visualRecommendations}
+              />
+            </div>
+          </Card>
+        )}
       </div>
 
       <div className="flex justify-between no-print">
@@ -131,6 +163,25 @@ export function StepSummary() {
           <ArrowLeft className="mr-2 h-4 w-4" /> Back
         </Button>
       </div>
+    </div>
+  );
+}
+
+function SummaryList({ icon, title, items }: { icon: ReactNode; title: string; items: string[] }) {
+  return (
+    <div className="rounded-xl border bg-secondary/35 p-4">
+      <div className="flex items-center gap-2">
+        {icon}
+        <h4 className="font-semibold">{title}</h4>
+      </div>
+      <ul className="mt-4 space-y-3 text-sm leading-6 text-muted-foreground">
+        {items.map((item) => (
+          <li key={item} className="flex gap-3">
+            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary/75" />
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

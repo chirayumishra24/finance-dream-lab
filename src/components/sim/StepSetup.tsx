@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Cake, BookOpen, Gamepad2, ToyBrick, Sparkles, ArrowRight, CheckCircle2, Users2, Wand2 } from "lucide-react";
 import { Mascot } from "./Mascot";
+import { ShopVisual } from "./ShopVisual";
 
 const SHOPS: { type: ShopType; icon: any; desc: string }[] = [
   { type: "Bakery",      icon: Cake,      desc: "Fresh baked goods, daily inventory" },
@@ -39,19 +40,16 @@ export function StepSetup() {
             </div>
           </div>
 
-          <div className="rounded-[1.5rem] border border-border/80 bg-secondary/45 p-5">
-            <div className="text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Current concept</div>
-            <div className="mt-4 flex items-start gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
-                {selectedShop ? <selectedShop.icon className="h-6 w-6" /> : <Sparkles className="h-6 w-6" />}
+          <div className="flex items-center justify-center min-h-[160px]">
+            {shopType ? <ShopVisual /> : (
+              <div className="w-full rounded-[1.5rem] border border-border/80 bg-secondary/45 p-8 flex flex-col items-center justify-center text-center">
+                <div className="h-12 w-12 rounded-2xl bg-muted flex items-center justify-center mb-4">
+                  <Sparkles className="h-6 w-6 text-muted-foreground" />
+                </div>
+                <div className="text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Preview Pending</div>
+                <div className="mt-2 text-sm text-muted-foreground font-medium">Select a concept to visualize your venture.</div>
               </div>
-              <div>
-                <div className="text-2xl font-bold">{selectedLabel}</div>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  {selectedShop?.desc || "Choose a concept with a clear operating personality before you begin."}
-                </p>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

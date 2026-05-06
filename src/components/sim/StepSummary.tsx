@@ -4,7 +4,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Lightbulb, Maximize2, Palette, Printer, Share2, Sparkles } from "lucide-react";
+import { Award, TrendingUp, Users, Wallet, Share2, Download, ArrowLeft, Store, Lightbulb, Maximize2, Palette, Printer, Sparkles } from "lucide-react";
+import { ShopVisual } from "./ShopVisual";
 import { toast } from "sonner";
 import { Mascot } from "./Mascot";
 import { PitchRecorder } from "./PitchRecorder";
@@ -58,19 +59,21 @@ export function StepSummary() {
       </div>
 
       <div id="summary-doc" className="space-y-6 bg-background p-6 rounded-xl">
-        {/* Cover */}
-        <Card className="overflow-hidden p-0 shadow-elev">
-          <div className="bg-gradient-primary p-8 text-primary-foreground">
-            <div className="text-xs font-semibold uppercase tracking-[0.2em] opacity-80">Final Report</div>
-            <h1 className="mt-2 text-4xl font-bold tracking-tight">{teamName || "Team"}</h1>
-            <p className="mt-1 text-lg opacity-90">{shopName}</p>
-            <div className="mt-6 flex flex-wrap gap-6">
-              <Stat label="Net Result" value={formatINR(total)} />
-              <Stat label="Months Run" value={`${months.length} / 6`} />
-              <Stat label="Total Budget" value={formatCompact(2_000_000)} />
+        <div className="grid gap-6 lg:grid-cols-[0.35fr_0.65fr]">
+          <ShopVisual />
+          <Card className="overflow-hidden p-0 shadow-elev flex flex-col justify-center">
+            <div className="bg-gradient-primary p-8 text-primary-foreground h-full">
+              <div className="text-xs font-semibold uppercase tracking-[0.2em] opacity-80">Final Report</div>
+              <h1 className="mt-2 text-4xl font-bold tracking-tight">{teamName || "Team"}</h1>
+              <p className="mt-1 text-lg opacity-90">{shopName}</p>
+              <div className="mt-6 flex flex-wrap gap-6">
+                <Stat label="Net Result" value={formatINR(total)} />
+                <Stat label="Months Run" value={`${months.length} / 6`} />
+                <Stat label="Total Budget" value={formatCompact(2_000_000)} />
+              </div>
             </div>
-          </div>
-        </Card>
+          </Card>
+        </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
           <Card className="p-6 shadow-soft">

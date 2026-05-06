@@ -8,6 +8,7 @@ import { StepAnalytics } from "@/components/sim/StepAnalytics";
 import { StepSummary } from "@/components/sim/StepSummary";
 import { Button } from "@/components/ui/button";
 import { Store, RotateCcw, Wallet, TrendingUp, LayoutDashboard } from "lucide-react";
+import { ShopVisual } from "@/components/sim/ShopVisual";
 
 const STEP_META = [
   {
@@ -106,9 +107,12 @@ const Index = () => {
           </div>
 
           <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
-            <HeroStat label="Current Phase" value={`Step ${step + 1}`} helper={step === 4 ? "Final pitch mode" : "Active workflow"} />
-            <HeroStat label="Team" value={teamName || "Pending"} helper={shopLabel || "Choose a concept"} />
-            <HeroStat label="Shop" value={shopLabel || "Unselected"} helper="Identity updates in real time" />
+            <ShopVisual />
+            <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
+              <HeroStat label="Current Phase" value={`Step ${step + 1}`} helper={step === 4 ? "Final pitch mode" : "Active workflow"} />
+              <HeroStat label="Team" value={teamName || "Pending"} helper={shopLabel || "Choose a concept"} />
+              <HeroStat label="Budget" value="₹20,00,000" helper="Initial seed capital" />
+            </div>
           </div>
         </section>
 

@@ -103,17 +103,21 @@ export const useSim = create<State>()(
       months: [],
       currentMonth: 1,
       teacherMode: false,
+      pendingChallenge: null,
       scenarios: { competitor: false, rentHike: false, onlineBoost: false },
       reflection: { challenge: "", improve: "" },
+      pitch: { transcript: "", durationSec: 0, review: null },
 
       setStep: (step) => set({ step }),
       setTeam: (teamName) => set({ teamName }),
       setShop: (shopType, customShop) =>
         set({ shopType, customShop: customShop ?? get().customShop }),
       setBudget: (b) => set({ budget: { ...get().budget, ...b } }),
-      toggleTeacher: () => set({ teacherMode: !get().teacherMode }),
+      toggleTeacher: () => set({ teacherMode: !get().teacherMode, pendingChallenge: null }),
+      setPendingChallenge: (e) => set({ pendingChallenge: e }),
       setScenario: (k, v) => set({ scenarios: { ...get().scenarios, [k]: v } }),
       setReflection: (r) => set({ reflection: { ...get().reflection, ...r } }),
+      setPitch: (p) => set({ pitch: { ...get().pitch, ...p } }),
 
       runMonth: ({ revenue, misc, event }) => {
         const { months, currentMonth, budget, scenarios, teacherMode } = get();

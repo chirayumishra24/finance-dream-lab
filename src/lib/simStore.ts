@@ -40,6 +40,13 @@ export interface MonthResult {
 
 export type Step = 0 | 1 | 2 | 3 | 4;
 
+export interface PitchReview {
+  scores: { clarity: number; financials: number; persuasiveness: number; overall: number };
+  strengths: string[];
+  improvements: string[];
+  summary: string;
+}
+
 interface State {
   step: Step;
   teamName: string;
@@ -48,9 +55,11 @@ interface State {
   budget: Budget;
   months: MonthResult[];
   currentMonth: number; // 1..6 next to run; 7 when finished
-  teacherMode: boolean;
+  teacherMode: boolean; // when true: monthly Challenge popup
+  pendingChallenge: EventType | null;
   scenarios: { competitor: boolean; rentHike: boolean; onlineBoost: boolean };
   reflection: { challenge: string; improve: string };
+  pitch: { transcript: string; durationSec: number; review: PitchReview | null };
 
   setStep: (s: Step) => void;
   setTeam: (name: string) => void;
@@ -59,8 +68,10 @@ interface State {
   runMonth: (input: { revenue: number; misc: number; event?: EventType }) => void;
   resetSim: () => void;
   toggleTeacher: () => void;
+  setPendingChallenge: (e: EventType | null) => void;
   setScenario: (k: keyof State["scenarios"], v: boolean) => void;
   setReflection: (r: Partial<State["reflection"]>) => void;
+  setPitch: (p: Partial<State["pitch"]>) => void;
 }
 
 const initialBudget: Budget = {
@@ -92,17 +103,21 @@ export const useSim = create<State>()(
       months: [],
       currentMonth: 1,
       teacherMode: false,
+      pendingChallenge: null,
       scenarios: { competitor: false, rentHike: false, onlineBoost: false },
       reflection: { challenge: "", improve: "" },
+      pitch: { transcript: "", durationSec: 0, review: null },
 
       setStep: (step) => set({ step }),
       setTeam: (teamName) => set({ teamName }),
       setShop: (shopType, customShop) =>
         set({ shopType, customShop: customShop ?? get().customShop }),
       setBudget: (b) => set({ budget: { ...get().budget, ...b } }),
-      toggleTeacher: () => set({ teacherMode: !get().teacherMode }),
+      toggleTeacher: () => set({ teacherMode: !get().teacherMode, pendingChallenge: null }),
+      setPendingChallenge: (e) => set({ pendingChallenge: e }),
       setScenario: (k, v) => set({ scenarios: { ...get().scenarios, [k]: v } }),
       setReflection: (r) => set({ reflection: { ...get().reflection, ...r } }),
+      setPitch: (p) => set({ pitch: { ...get().pitch, ...p } }),
 
       runMonth: ({ revenue, misc, event }) => {
         const { months, currentMonth, budget, scenarios, teacherMode } = get();
@@ -145,7 +160,9 @@ export const useSim = create<State>()(
           step: 0,
           months: [],
           currentMonth: 1,
+          pendingChallenge: null,
           reflection: { challenge: "", improve: "" },
+          pitch: { transcript: "", durationSec: 0, review: null },
         }),
     }),
     { name: "design-shop-sim" },

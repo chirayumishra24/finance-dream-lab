@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, AlertTriangle } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import { Mascot } from "./Mascot";
 
 const FIELDS = [
   { key: "rent",      label: "Rent",                min: 300_000, max: 600_000,  required: true,  color: "hsl(239 84% 60%)" },
@@ -47,6 +48,11 @@ export function StepBudget() {
           <StatTile label="Remaining"    value={formatCompact(remaining)} tone={over ? "danger" : remaining === 0 ? "success" : "default"} />
         </div>
       </header>
+
+      <Mascot
+        speakKey="budget-intro"
+        message="Now the fun part — money! You have twenty lakh rupees. Spread it wisely between rent, inventory, staff, decoration, and marketing. Stay within each range, and don't overshoot the total."
+      />
 
       <div className="grid gap-6 lg:grid-cols-[1fr,360px]">
         <div className="space-y-4">

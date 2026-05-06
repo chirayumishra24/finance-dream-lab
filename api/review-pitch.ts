@@ -47,15 +47,12 @@ Return a JSON object exactly in this format:
   "scores": {
     "clarity": number (1-10),
     "financials": number (1-10),
-    "market": number (1-10),
-    "presentation": number (1-10),
+    "persuasiveness": number (1-10),
     "overall": number (1-10)
   },
-  "feedback": {
-    "strengths": ["string", "string"],
-    "improvements": ["string", "string"],
-    "verdict": "string (final summary)"
-  }
+  "strengths": ["string", "string"],
+  "improvements": ["string", "string"],
+  "summary": "string (final summary)"
 }
 DO NOT include any text before or after the JSON.`;
 

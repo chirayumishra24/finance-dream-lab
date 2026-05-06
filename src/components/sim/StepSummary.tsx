@@ -5,6 +5,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Maximize2, Printer, Share2 } from "lucide-react";
 import { toast } from "sonner";
+import { Mascot } from "./Mascot";
+import { PitchRecorder } from "./PitchRecorder";
 
 export function StepSummary() {
   const { teamName, shopType, customShop, budget, months, reflection, setReflection, setStep } = useSim();
@@ -42,6 +44,17 @@ export function StepSummary() {
           </Button>
         </div>
       </header>
+
+      <div className="no-print">
+        <Mascot
+          speakKey="summary-intro"
+          message="This is your moment! Review the report, then record a 90-second pitch. The AI judge will score your clarity, financial reasoning, and persuasiveness."
+        />
+      </div>
+
+      <div className="no-print">
+        <PitchRecorder />
+      </div>
 
       <div id="summary-doc" className="space-y-6 bg-background p-6 rounded-xl">
         {/* Cover */}

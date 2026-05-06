@@ -40,6 +40,13 @@ export interface MonthResult {
 
 export type Step = 0 | 1 | 2 | 3 | 4;
 
+export interface PitchReview {
+  scores: { clarity: number; financials: number; persuasiveness: number; overall: number };
+  strengths: string[];
+  improvements: string[];
+  summary: string;
+}
+
 interface State {
   step: Step;
   teamName: string;
@@ -48,9 +55,11 @@ interface State {
   budget: Budget;
   months: MonthResult[];
   currentMonth: number; // 1..6 next to run; 7 when finished
-  teacherMode: boolean;
+  teacherMode: boolean; // when true: monthly Challenge popup
+  pendingChallenge: EventType | null;
   scenarios: { competitor: boolean; rentHike: boolean; onlineBoost: boolean };
   reflection: { challenge: string; improve: string };
+  pitch: { transcript: string; durationSec: number; review: PitchReview | null };
 
   setStep: (s: Step) => void;
   setTeam: (name: string) => void;
@@ -59,8 +68,10 @@ interface State {
   runMonth: (input: { revenue: number; misc: number; event?: EventType }) => void;
   resetSim: () => void;
   toggleTeacher: () => void;
+  setPendingChallenge: (e: EventType | null) => void;
   setScenario: (k: keyof State["scenarios"], v: boolean) => void;
   setReflection: (r: Partial<State["reflection"]>) => void;
+  setPitch: (p: Partial<State["pitch"]>) => void;
 }
 
 const initialBudget: Budget = {

@@ -1,32 +1,39 @@
 # Finance Dream Lab
 
-This project is a React + Vite classroom business simulator deployed on Vercel.
+This project is a React + Vite classroom business simulator with Supabase Edge Functions for AI features.
 
-## AI architecture
+## Gemini activity analysis
 
-Gemini-powered features now run through Vercel API routes:
+The analytics screen now includes a `Gemini Analysis` panel that:
 
-- `POST /api/analyze-activity`
-- `POST /api/review-pitch`
+- analyzes the team activity month by month
+- returns business insights and next-step recommendations
+- suggests concrete visual improvements for the analytics and report UI
 
-The frontend calls these routes directly with `fetch()`, so Supabase is no longer part of the AI flow.
+## Gemini API key setup
 
-## Environment setup
+Do not put the Gemini key in a `VITE_` variable. That would expose it to every browser.
 
-Set this in Vercel Project Settings -> Environment Variables:
+Use a Supabase Edge Function secret instead:
+
+```bash
+supabase secrets set GEMINI_API_KEY=your_gemini_api_key
+```
+
+For local function development, create `supabase/.env.local`:
 
 ```env
 GEMINI_API_KEY=your_gemini_api_key
 ```
 
-Do not use `VITE_GEMINI_API_KEY`, because that would expose the key to the browser.
+Then run your local stack or deploy the function:
 
-For local development, create a root `.env.local` file with:
-
-```env
-GEMINI_API_KEY=your_gemini_api_key
+```bash
+supabase functions deploy analyze-activity
 ```
 
-## Deployment
+The existing frontend `.env` file should continue to hold only public Supabase values such as:
 
-Deploy the project to Vercel as a standard Vite app. The static frontend will be built from `dist`, and the backend endpoints will be served from the `api/` directory.
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_PUBLISHABLE_KEY`
+- `VITE_SUPABASE_PROJECT_ID`

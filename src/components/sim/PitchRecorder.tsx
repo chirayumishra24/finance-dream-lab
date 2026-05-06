@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Mic, Square, Loader2, RotateCcw, Sparkles, Award } from "lucide-react";
 import { useSim } from "@/lib/simStore";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const PITCH_DURATION = 90; // seconds
@@ -93,18 +94,14 @@ export function PitchRecorder() {
     if (!pitch.transcript) { toast.error("Record a pitch first"); return; }
     setSubmitting(true);
     try {
-      const apiResponse = await fetch("/api/review-pitch", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      const { data, error } = await supabase.functions.invoke("review-pitch", {
+        body: {
           transcript: pitch.transcript,
           durationSec: pitch.durationSec,
           teamName, shopName, finalPL, monthsRun: months.length,
-        }),
+        },
       });
-
-      const data = await apiResponse.json();
-      if (!apiResponse.ok) throw new Error(data?.error || "Could not get review");
+      if (error) throw error;
       if (data?.error) throw new Error(data.error);
       setPitch({ review: data.review });
       toast.success("AI review ready!");

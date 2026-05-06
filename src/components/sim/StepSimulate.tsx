@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState } from "react";
 import { useSim, formatINR, formatCompact, EVENT_META, EventType } from "@/lib/simStore";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
-import { ArrowLeft, ArrowRight, Play, RotateCcw, TrendingUp, TrendingDown, Zap, Gauge, Landmark, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, Play, RotateCcw, TrendingUp, TrendingDown, Zap } from "lucide-react";
 import { Mascot } from "./Mascot";
 import { ChallengeDialog } from "./ChallengeDialog";
 
@@ -21,7 +21,6 @@ export function StepSimulate() {
 
   const finished = currentMonth > 6;
   const cumulative = months.reduce((a, m) => a + m.profit, 0);
-  const projectedProfit = revenue - (budget.rent / 6 + budget.staff / 6 + misc);
 
   // Auto-open challenge dialog for the next month when teacher mode is on.
   useEffect(() => {
@@ -58,20 +57,14 @@ export function StepSimulate() {
         }
       />
 
-      <div className="grid gap-6 lg:grid-cols-[400px,1fr]">
+      <div className="grid gap-6 lg:grid-cols-[380px,1fr]">
         {/* Controls */}
-        <Card className="surface-panel h-fit space-y-5 rounded-[1.6rem] p-5 shadow-elev">
+        <Card className="p-5 shadow-soft h-fit space-y-5">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold">Month {Math.min(currentMonth, 6)} controls</h3>
             <Button variant="ghost" size="sm" onClick={resetSim}>
               <RotateCcw className="mr-1 h-3.5 w-3.5" /> Reset
             </Button>
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
-            <SignalCard icon={<Gauge className="h-4 w-4 text-primary" />} label="Revenue target" value={formatCompact(revenue)} />
-            <SignalCard icon={<Landmark className="h-4 w-4 text-warning" />} label="Expense load" value={formatCompact(budget.rent / 6 + budget.staff / 6 + misc)} />
-            <SignalCard icon={<Sparkles className="h-4 w-4 text-success" />} label="Projected month" value={formatCompact(projectedProfit)} />
           </div>
 
           <div className="space-y-2">
@@ -89,7 +82,7 @@ export function StepSimulate() {
               className="font-mono" disabled={finished} />
           </div>
 
-          <div className="rounded-2xl border border-white/75 bg-white/68 p-4 text-xs space-y-1.5">
+          <div className="rounded-md bg-secondary/60 p-3 text-xs space-y-1">
             <Row k="Rent (monthly)" v={formatINR(budget.rent / 6)} />
             <Row k="Staff (monthly)" v={formatINR(budget.staff / 6)} />
             <Row k="Misc" v={formatINR(misc)} />
@@ -130,18 +123,10 @@ export function StepSimulate() {
         </Card>
 
         {/* Results table */}
-        <Card className="overflow-hidden rounded-[1.6rem] p-0 shadow-elev">
-          <div className="border-b bg-white/70 px-5 py-4">
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div>
-                <h3 className="font-semibold">Monthly Performance</h3>
-                <p className="text-xs text-muted-foreground">Each row appears as you run a month</p>
-              </div>
-              <div className="rounded-2xl border border-white/80 bg-white/75 px-4 py-3 text-sm shadow-sm">
-                <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Running story</div>
-                <div className="mt-1 font-semibold">{months.length === 0 ? "No months recorded yet" : finished ? "Simulation complete" : `${months.length} months recorded`}</div>
-              </div>
-            </div>
+        <Card className="p-0 shadow-soft overflow-hidden">
+          <div className="border-b px-5 py-4">
+            <h3 className="font-semibold">Monthly Performance</h3>
+            <p className="text-xs text-muted-foreground">Each row appears as you run a month</p>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -207,18 +192,6 @@ export function StepSimulate() {
   );
 }
 
-function SignalCard({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
-  return (
-    <div className="rounded-2xl border border-white/75 bg-white/72 p-4 shadow-sm">
-      <div className="flex items-center gap-2">
-        {icon}
-        <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{label}</span>
-      </div>
-      <div className="mt-2 font-mono text-xl font-semibold">{value}</div>
-    </div>
-  );
-}
-
 function Row({ k, v, bold }: { k: string; v: string; bold?: boolean }) {
   return (
     <div className="flex justify-between">
@@ -238,7 +211,7 @@ function Tile({ label, value, tone = "default" }: { label: string; value: string
   );
 }
 
-function EventBadge({ tone, children }: { tone: "neutral" | "good" | "bad" | "warn"; children: ReactNode }) {
+function EventBadge({ tone, children }: { tone: "neutral" | "good" | "bad" | "warn"; children: React.ReactNode }) {
   const map = {
     neutral: "bg-secondary text-muted-foreground",
     good:    "bg-success-soft text-success",

@@ -6,6 +6,7 @@ import {
   ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
   ReferenceLine, Area, ComposedChart,
 } from "recharts";
+import { Mascot } from "./Mascot";
 
 export function StepAnalytics() {
   const { months, setStep } = useSim();

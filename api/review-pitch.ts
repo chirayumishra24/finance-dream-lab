@@ -116,10 +116,17 @@ Transcript:
       return res.status(200).json({ review: JSON.parse(cleaned) });
     } catch (parseError) {
       console.error("Failed to parse Gemini JSON. Raw text:", rawText);
-      return res.status(500).json({ error: "Gemini returned invalid JSON format." });
+      return res.status(500).json({ 
+        error: "Gemini returned invalid JSON format.",
+        details: parseError instanceof Error ? parseError.message : String(parseError),
+        raw: rawText.substring(0, 200)
+      });
     }
   } catch (error) {
     console.error("review-pitch error:", error);
-    return res.status(500).json({ error: error instanceof Error ? error.message : "Unknown error" });
+    return res.status(500).json({ 
+      error: error instanceof Error ? error.message : "Unknown error",
+      stack: error instanceof Error ? error.stack : undefined
+    });
   }
 }

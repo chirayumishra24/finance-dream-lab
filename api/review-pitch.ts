@@ -7,6 +7,21 @@ type RequestBody = {
   monthsRun?: number;
 };
 
+function parseGeminiError(status: number, errorText: string) {
+  const normalized = errorText.toLowerCase();
+
+  if (status === 400) return "Gemini rejected the pitch review request. Check the request format.";
+  if (status === 401 || status === 403) {
+    if (normalized.includes("api key")) return "Gemini API key is invalid, restricted, or not allowed for this request.";
+    return "Gemini access was denied. Check the API key and Google AI project permissions.";
+  }
+  if (status === 404) return "Gemini endpoint or model was not found.";
+  if (status === 429) return "Gemini rate limit or quota was reached. Try again later.";
+  if (status >= 500) return "Gemini is temporarily unavailable. Try again in a moment.";
+
+  return "Gemini pitch review request failed.";
+}
+
 export default async function handler(req: any, res: any) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
@@ -42,7 +57,7 @@ Transcript:
 """${transcript}"""`;
 
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -84,7 +99,7 @@ Transcript:
     if (!response.ok) {
       const errorText = await response.text();
       console.error("Gemini review-pitch error", response.status, errorText);
-      return res.status(response.status).json({ error: "Gemini pitch review request failed." });
+      return res.status(response.status).json({ error: parseGeminiError(response.status, errorText) });
     }
 
     const data = await response.json();

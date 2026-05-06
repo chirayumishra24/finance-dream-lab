@@ -24,6 +24,21 @@ type RequestBody = {
   scenarios?: Record<string, boolean>;
 };
 
+function parseGeminiError(status: number, errorText: string) {
+  const normalized = errorText.toLowerCase();
+
+  if (status === 400) return "Gemini rejected the request. Check the model request format.";
+  if (status === 401 || status === 403) {
+    if (normalized.includes("api key")) return "Gemini API key is invalid, restricted, or not allowed for this request.";
+    return "Gemini access was denied. Check the API key and Google AI project permissions.";
+  }
+  if (status === 404) return "Gemini endpoint or model was not found.";
+  if (status === 429) return "Gemini rate limit or quota was reached. Try again later.";
+  if (status >= 500) return "Gemini is temporarily unavailable. Try again in a moment.";
+
+  return "Gemini analysis request failed.";
+}
+
 export default async function handler(req: any, res: any) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
@@ -129,7 +144,7 @@ Rules:
     if (!response.ok) {
       const errorText = await response.text();
       console.error("Gemini analyze-activity error", response.status, errorText);
-      return res.status(response.status).json({ error: "Gemini analysis request failed." });
+      return res.status(response.status).json({ error: parseGeminiError(response.status, errorText) });
     }
 
     const data = await response.json();

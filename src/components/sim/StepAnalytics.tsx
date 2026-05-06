@@ -8,7 +8,6 @@ import {
   ReferenceLine, Area, ComposedChart,
 } from "recharts";
 import { Mascot } from "./Mascot";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export function StepAnalytics() {
@@ -47,17 +46,20 @@ export function StepAnalytics() {
     setAnalyzing(true);
 
     try {
-      const { data: response, error } = await supabase.functions.invoke("analyze-activity", {
-        body: {
+      const apiResponse = await fetch("/api/analyze-activity", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           teamName,
           shopName,
           budget,
           months,
           scenarios,
-        },
+        }),
       });
 
-      if (error) throw error;
+      const response = await apiResponse.json();
+      if (!apiResponse.ok) throw new Error(response?.error || "Could not generate analysis.");
       if (!response?.analysis) throw new Error("No analysis returned.");
 
       setActivityAnalysis(response.analysis);
@@ -90,7 +92,7 @@ export function StepAnalytics() {
         <KPI label="Break-even" value={breakEvenIdx >= 0 ? `Month ${breakEvenIdx + 1}` : "Not reached"} />
       </div>
 
-      <Card className="p-5 shadow-soft">
+      <Card className="surface-panel rounded-[1.5rem] p-5 shadow-soft">
         <h3 className="mb-1 font-semibold">Monthly Profit / Loss</h3>
         <p className="mb-4 text-xs text-muted-foreground">Bars indicate per-month result; line shows cumulative position</p>
         <div className="h-80">
@@ -120,7 +122,7 @@ export function StepAnalytics() {
         </div>
       </Card>
 
-      <Card className="p-5 shadow-soft">
+      <Card className="surface-panel rounded-[1.5rem] p-5 shadow-soft">
         <h3 className="mb-4 font-semibold">Revenue vs Expenses</h3>
         <div className="h-64">
           <ResponsiveContainer>
@@ -138,8 +140,8 @@ export function StepAnalytics() {
         </div>
       </Card>
 
-      <Card className="overflow-hidden border-primary/15 shadow-elev">
-        <div className="bg-gradient-primary px-5 py-4 text-primary-foreground">
+      <Card className="overflow-hidden rounded-[1.6rem] border-primary/15 shadow-elev">
+        <div className="bg-gradient-hero px-5 py-4 text-primary-foreground">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="space-y-1">
               <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] opacity-85">
@@ -155,7 +157,7 @@ export function StepAnalytics() {
               onClick={handleAnalyze}
               disabled={analyzing}
               variant="secondary"
-              className="border-white/10 bg-white/14 text-white hover:bg-white/20"
+                className="border-white/10 bg-white/12 text-white hover:bg-white/18"
             >
               <Sparkles className="h-4 w-4" />
               {analyzing ? "Analyzing..." : activityAnalysis ? "Refresh Analysis" : "Analyze Activity"}

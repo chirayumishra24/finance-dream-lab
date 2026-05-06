@@ -1,4 +1,0 @@
-project_id = "jkjybklfwdreuhblhlru"
-
-[functions.review-pitch]
-verify_jwt = false

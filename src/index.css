@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,58 +6,62 @@
 
 @layer base {
   :root {
-    --background: 220 25% 98%;
-    --foreground: 222 47% 11%;
+    --background: 220 23% 97%;
+    --foreground: 222 31% 14%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 222 31% 14%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 222 31% 14%;
 
-    --primary: 239 84% 60%;
+    --primary: 221 73% 49%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 244 90% 70%;
+    --primary-glow: 215 92% 66%;
 
-    --secondary: 220 20% 96%;
-    --secondary-foreground: 222 47% 11%;
+    --secondary: 220 22% 94%;
+    --secondary-foreground: 222 31% 14%;
 
-    --muted: 220 20% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 220 18% 95%;
+    --muted-foreground: 218 13% 43%;
 
-    --accent: 239 84% 96%;
-    --accent-foreground: 239 84% 40%;
+    --accent: 214 100% 97%;
+    --accent-foreground: 221 73% 38%;
 
-    --success: 152 76% 40%;
+    --success: 156 72% 34%;
     --success-foreground: 0 0% 100%;
-    --success-soft: 152 76% 95%;
+    --success-soft: 156 58% 93%;
 
-    --danger: 0 75% 55%;
+    --danger: 4 78% 56%;
     --danger-foreground: 0 0% 100%;
-    --danger-soft: 0 75% 96%;
+    --danger-soft: 0 83% 96%;
 
-    --warning: 38 92% 50%;
+    --warning: 36 90% 48%;
     --warning-foreground: 0 0% 100%;
-    --warning-soft: 38 92% 95%;
+    --warning-soft: 36 100% 94%;
 
-    --destructive: 0 75% 55%;
+    --destructive: 4 78% 56%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 16% 90%;
-    --input: 220 16% 90%;
-    --ring: 239 84% 60%;
+    --border: 220 18% 87%;
+    --input: 220 18% 87%;
+    --ring: 221 73% 49%;
 
-    --radius: 0.75rem;
+    --radius: 1.1rem;
 
-    --gradient-primary: linear-gradient(135deg, hsl(239 84% 60%), hsl(258 90% 66%));
-    --gradient-surface: linear-gradient(180deg, hsl(220 25% 99%), hsl(220 25% 96%));
-    --gradient-success: linear-gradient(135deg, hsl(152 76% 40%), hsl(165 76% 45%));
-    --gradient-danger: linear-gradient(135deg, hsl(0 75% 55%), hsl(15 80% 58%));
+    --gradient-primary: linear-gradient(135deg, hsl(221 73% 49%), hsl(201 88% 53%));
+    --gradient-surface:
+      radial-gradient(circle at top left, hsl(214 100% 93% / 0.55), transparent 28%),
+      radial-gradient(circle at top right, hsl(220 100% 96% / 0.75), transparent 34%),
+      linear-gradient(180deg, hsl(220 28% 98%), hsl(220 20% 95%));
+    --gradient-success: linear-gradient(135deg, hsl(156 72% 34%), hsl(167 73% 40%));
+    --gradient-danger: linear-gradient(135deg, hsl(4 78% 56%), hsl(18 86% 56%));
+    --gradient-hero: linear-gradient(145deg, hsl(224 46% 18%), hsl(217 47% 24%) 52%, hsl(210 63% 30%));
 
-    --shadow-sm: 0 1px 2px hsl(222 47% 11% / 0.04);
-    --shadow-md: 0 4px 12px -2px hsl(222 47% 11% / 0.06), 0 2px 4px -2px hsl(222 47% 11% / 0.04);
-    --shadow-lg: 0 12px 32px -8px hsl(222 47% 11% / 0.10), 0 4px 12px -4px hsl(222 47% 11% / 0.06);
-    --shadow-glow: 0 8px 32px -8px hsl(239 84% 60% / 0.35);
+    --shadow-sm: 0 1px 2px hsl(222 31% 14% / 0.04);
+    --shadow-md: 0 10px 24px -18px hsl(222 31% 14% / 0.18), 0 2px 8px -6px hsl(222 31% 14% / 0.08);
+    --shadow-lg: 0 26px 60px -34px hsl(222 31% 14% / 0.26), 0 12px 24px -18px hsl(222 31% 14% / 0.12);
+    --shadow-glow: 0 12px 32px -18px hsl(214 86% 56% / 0.24);
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -76,16 +80,23 @@
   }
 
   html {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Manrope', system-ui, -apple-system, sans-serif;
     font-feature-settings: 'cv11', 'ss01', 'ss03';
   }
 
   body {
     @apply bg-background text-foreground antialiased;
+    background-image: var(--gradient-surface);
+    min-height: 100vh;
   }
 
   .font-mono {
     font-family: 'JetBrains Mono', monospace;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Sora', 'Manrope', system-ui, sans-serif;
+    letter-spacing: -0.03em;
   }
 }
 
@@ -94,9 +105,19 @@
   .bg-gradient-surface { background: var(--gradient-surface); }
   .bg-gradient-success { background: var(--gradient-success); }
   .bg-gradient-danger  { background: var(--gradient-danger); }
+  .bg-gradient-hero    { background: var(--gradient-hero); }
   .shadow-soft  { box-shadow: var(--shadow-md); }
   .shadow-elev  { box-shadow: var(--shadow-lg); }
   .shadow-glow  { box-shadow: var(--shadow-glow); }
+  .glass-panel  {
+    background: hsl(0 0% 100% / 0.76);
+    backdrop-filter: blur(14px);
+  }
+  .surface-panel {
+    background:
+      linear-gradient(180deg, hsl(0 0% 100% / 0.92), hsl(0 0% 100% / 0.84));
+    backdrop-filter: blur(12px);
+  }
 
   .animate-fade-up {
     animation: fade-up 0.45s cubic-bezier(.2,.7,.2,1) both;
@@ -135,10 +156,42 @@
 /* subtle background grid for hero areas */
 .bg-grid {
   background-image:
-    linear-gradient(hsl(var(--border) / 0.6) 1px, transparent 1px),
-    linear-gradient(90deg, hsl(var(--border) / 0.6) 1px, transparent 1px);
-  background-size: 32px 32px;
+    linear-gradient(hsl(var(--border) / 0.45) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--border) / 0.45) 1px, transparent 1px);
+  background-size: 34px 34px;
   background-position: -1px -1px;
+}
+
+.ambient-orb {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(72px);
+  opacity: 0.16;
+  pointer-events: none;
+}
+
+.dashboard-grid {
+  background-image:
+    linear-gradient(hsl(var(--border) / 0.36) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--border) / 0.36) 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: linear-gradient(180deg, transparent, black 18%, black 82%, transparent);
+  pointer-events: none;
+}
+
+.dashboard-radial {
+  background:
+    radial-gradient(circle at 15% 20%, hsl(214 100% 86% / 0.28), transparent 22%),
+    radial-gradient(circle at 84% 12%, hsl(201 92% 83% / 0.22), transparent 24%),
+    radial-gradient(circle at 50% 100%, hsl(221 73% 49% / 0.08), transparent 34%);
+  pointer-events: none;
+}
+
+.dashboard-vignette {
+  background:
+    linear-gradient(180deg, hsl(220 28% 98% / 0) 0%, hsl(220 28% 98% / 0.55) 100%),
+    radial-gradient(circle at center, transparent 48%, hsl(220 28% 98% / 0.26) 100%);
+  pointer-events: none;
 }
 
 @media print {

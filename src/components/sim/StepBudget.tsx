@@ -1,10 +1,11 @@
+import type { ReactNode } from "react";
 import { useSim, TOTAL_BUDGET, formatINR, formatCompact } from "@/lib/simStore";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, AlertTriangle } from "lucide-react";
+import { ArrowLeft, ArrowRight, AlertTriangle, ShieldCheck, Target, BadgeIndianRupee } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { Mascot } from "./Mascot";
 
@@ -54,13 +55,13 @@ export function StepBudget() {
         message="Now the fun part — money! You have twenty lakh rupees. Spread it wisely between rent, inventory, staff, decoration, and marketing. Stay within each range, and don't overshoot the total."
       />
 
-      <div className="grid gap-6 lg:grid-cols-[1fr,360px]">
+      <div className="grid gap-6 lg:grid-cols-[1fr,380px]">
         <div className="space-y-4">
           {FIELDS.map(f => {
             const v = budget[f.key];
             const bad = (f.required && (v < f.min || v > f.max)) || (!f.required && v > f.max);
             return (
-              <Card key={f.key} className="p-5 shadow-soft">
+              <Card key={f.key} className="surface-panel rounded-[1.4rem] p-5 shadow-soft">
                 <div className="flex items-center justify-between gap-4">
                   <div>
                     <Label className="text-base font-semibold">{f.label}</Label>
@@ -104,9 +105,16 @@ export function StepBudget() {
           )}
         </div>
 
-        <Card className="p-5 shadow-soft h-fit lg:sticky lg:top-6">
-          <h3 className="mb-1 font-semibold">Allocation Breakdown</h3>
-          <p className="text-xs text-muted-foreground mb-4">Live distribution</p>
+        <Card className="surface-panel h-fit rounded-[1.6rem] p-5 shadow-elev lg:sticky lg:top-6">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h3 className="mb-1 font-semibold">Allocation Breakdown</h3>
+              <p className="text-xs text-muted-foreground mb-4">Live distribution</p>
+            </div>
+            <div className={`rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] ${valid ? "bg-success-soft text-success" : "bg-warning-soft text-warning"}`}>
+              {valid ? "Balanced" : "Needs work"}
+            </div>
+          </div>
           <div className="h-56">
             <ResponsiveContainer>
               <PieChart>
@@ -131,6 +139,12 @@ export function StepBudget() {
               </li>
             ))}
           </ul>
+
+          <div className="mt-5 space-y-3">
+            <GuidanceRow icon={<ShieldCheck className="h-4 w-4 text-success" />} title="Safety buffer" text="Keep some flexibility so random events do not immediately destabilize the business." />
+            <GuidanceRow icon={<Target className="h-4 w-4 text-primary" />} title="Growth signal" text="Marketing works best when core spend is already healthy enough to sustain demand." />
+            <GuidanceRow icon={<BadgeIndianRupee className="h-4 w-4 text-warning" />} title="Range discipline" text="Every category has a realistic classroom range. Sliders help keep the plan defensible." />
+          </div>
         </Card>
       </div>
 
@@ -142,6 +156,18 @@ export function StepBudget() {
           Start Simulation <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </div>
+    </div>
+  );
+}
+
+function GuidanceRow({ icon, title, text }: { icon: ReactNode; title: string; text: string }) {
+  return (
+    <div className="rounded-2xl border border-white/75 bg-white/65 p-4">
+      <div className="flex items-center gap-2">
+        {icon}
+        <div className="text-sm font-semibold">{title}</div>
+      </div>
+      <p className="mt-2 text-xs leading-5 text-muted-foreground">{text}</p>
     </div>
   );
 }

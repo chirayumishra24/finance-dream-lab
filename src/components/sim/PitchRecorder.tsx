@@ -213,29 +213,29 @@ export function PitchRecorder() {
             <div className="flex items-center justify-between">
               <h4 className="font-semibold">AI Pitch Review</h4>
               <div className="flex items-center gap-1.5 rounded-full bg-gradient-primary px-3 py-1 text-sm font-bold text-primary-foreground shadow-glow">
-                <Award className="h-3.5 w-3.5" /> {review.scores.overall}/10
+                <Award className="h-3.5 w-3.5" /> {(review.scores?.overall || 0)}/10
               </div>
             </div>
 
             <div className="grid grid-cols-3 gap-2">
-              <ScoreCell label="Clarity" v={review.scores.clarity} />
-              <ScoreCell label="Financials" v={review.scores.financials} />
-              <ScoreCell label="Persuasion" v={review.scores.persuasiveness} />
+              <ScoreCell label="Clarity" v={review.scores?.clarity || 0} />
+              <ScoreCell label="Financials" v={review.scores?.financials || 0} />
+              <ScoreCell label="Persuasion" v={review.scores?.persuasiveness || 0} />
             </div>
 
-            <p className="text-sm italic text-muted-foreground">"{review.summary}"</p>
+            <p className="text-sm italic text-muted-foreground">"{review.summary || "No summary provided."}"</p>
 
             <div className="grid gap-3 md:grid-cols-2">
               <div>
                 <div className="text-xs font-semibold uppercase tracking-wider text-success mb-1.5">Strengths</div>
                 <ul className="space-y-1 text-sm">
-                  {review.strengths.map((s, i) => <li key={i} className="flex gap-2"><span className="text-success">✓</span>{s}</li>)}
+                  {(review.strengths || []).map((s, i) => <li key={i} className="flex gap-2"><span className="text-success">✓</span>{s}</li>)}
                 </ul>
               </div>
               <div>
                 <div className="text-xs font-semibold uppercase tracking-wider text-warning mb-1.5">Improve</div>
                 <ul className="space-y-1 text-sm">
-                  {review.improvements.map((s, i) => <li key={i} className="flex gap-2"><span className="text-warning">→</span>{s}</li>)}
+                  {(review.improvements || []).map((s, i) => <li key={i} className="flex gap-2"><span className="text-warning">→</span>{s}</li>)}
                 </ul>
               </div>
             </div>

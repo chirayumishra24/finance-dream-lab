@@ -105,7 +105,9 @@ Transcript:
     try {
       // Clean up markdown if present
       const cleaned = rawText.replace(/```json\n?/, "").replace(/\n?```/, "").trim();
-      return res.status(200).json({ review: JSON.parse(cleaned) });
+      const parsed = JSON.parse(cleaned);
+      console.log("Gemini parsed success:", JSON.stringify(parsed, null, 2));
+      return res.status(200).json({ review: parsed });
     } catch (parseError) {
       console.error("Failed to parse Gemini JSON. Raw text:", rawText);
       return res.status(500).json({ 

@@ -1,20 +1,12 @@
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
-
-interface Budget {
+type Budget = {
   rent: number;
   inventory: number;
   staff: number;
   decor: number;
   marketing: number;
-}
+};
 
-interface MonthResult {
+type MonthResult = {
   month: number;
   baseRevenue: number;
   revenue: number;
@@ -22,34 +14,32 @@ interface MonthResult {
   profit: number;
   event: string;
   misc: number;
-}
+};
 
-serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+type RequestBody = {
+  teamName?: string;
+  shopName?: string;
+  budget?: Budget;
+  months?: MonthResult[];
+  scenarios?: Record<string, boolean>;
+};
+
+export default async function handler(req: any, res: any) {
+  if (req.method !== "POST") {
+    res.setHeader("Allow", "POST");
+    return res.status(405).json({ error: "Method not allowed" });
+  }
 
   try {
-    const {
-      teamName,
-      shopName,
-      budget,
-      months,
-      scenarios,
-    }: {
-      teamName?: string;
-      shopName?: string;
-      budget?: Budget;
-      months?: MonthResult[];
-      scenarios?: Record<string, boolean>;
-    } = await req.json();
+    const { teamName, shopName, budget, months, scenarios }: RequestBody = req.body ?? {};
+    const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
-    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
-    if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY missing");
+    if (!GEMINI_API_KEY) {
+      return res.status(500).json({ error: "GEMINI_API_KEY is not configured." });
+    }
 
     if (!months?.length) {
-      return new Response(JSON.stringify({ error: "No simulation activity found to analyze." }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return res.status(400).json({ error: "No simulation activity found to analyze." });
     }
 
     const totalProfit = months.reduce((sum, month) => sum + month.profit, 0);
@@ -86,13 +76,11 @@ Rules:
 - Keep each bullet short and actionable.
 - Visual recommendations must focus on charts, hierarchy, color use, spacing, annotations, and storytelling layout.`;
 
-    const resp = await fetch(
+    const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           systemInstruction: {
             parts: [{ text: systemPrompt }],
@@ -138,29 +126,22 @@ Rules:
       },
     );
 
-    if (!resp.ok) {
-      const errorText = await resp.text();
-      console.error("Gemini analyze-activity error", resp.status, errorText);
-      return new Response(JSON.stringify({ error: "Gemini analysis request failed." }), {
-        status: resp.status,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Gemini analyze-activity error", response.status, errorText);
+      return res.status(response.status).json({ error: "Gemini analysis request failed." });
     }
 
-    const data = await resp.json();
+    const data = await response.json();
     const rawText = data.candidates?.[0]?.content?.parts?.find((part: { text?: string }) => typeof part.text === "string")?.text;
-    if (!rawText) throw new Error("Gemini returned an empty response");
 
-    const analysis = JSON.parse(rawText);
+    if (!rawText) {
+      return res.status(500).json({ error: "Gemini returned an empty response." });
+    }
 
-    return new Response(JSON.stringify({ analysis }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  } catch (e) {
-    console.error("analyze-activity error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return res.status(200).json({ analysis: JSON.parse(rawText) });
+  } catch (error) {
+    console.error("analyze-activity error:", error);
+    return res.status(500).json({ error: error instanceof Error ? error.message : "Unknown error" });
   }
-});
+}

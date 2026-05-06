@@ -8,7 +8,6 @@ import {
   ReferenceLine, Area, ComposedChart,
 } from "recharts";
 import { Mascot } from "./Mascot";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export function StepAnalytics() {
@@ -47,17 +46,20 @@ export function StepAnalytics() {
     setAnalyzing(true);
 
     try {
-      const { data: response, error } = await supabase.functions.invoke("analyze-activity", {
-        body: {
+      const apiResponse = await fetch("/api/analyze-activity", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           teamName,
           shopName,
           budget,
           months,
           scenarios,
-        },
+        }),
       });
 
-      if (error) throw error;
+      const response = await apiResponse.json();
+      if (!apiResponse.ok) throw new Error(response?.error || "Could not generate analysis.");
       if (!response?.analysis) throw new Error("No analysis returned.");
 
       setActivityAnalysis(response.analysis);

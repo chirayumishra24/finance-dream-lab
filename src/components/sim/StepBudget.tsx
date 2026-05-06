@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, AlertTriangle } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import { Mascot } from "./Mascot";
 
 const FIELDS = [
   { key: "rent",      label: "Rent",                min: 300_000, max: 600_000,  required: true,  color: "hsl(239 84% 60%)" },

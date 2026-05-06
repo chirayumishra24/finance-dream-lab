@@ -40,13 +40,24 @@ export default async function handler(req: any, res: any) {
       return res.status(400).json({ error: "Transcript too short. Try recording again." });
     }
 
-    const systemPrompt = `You are a friendly but rigorous business pitch judge for a high-school entrepreneurship class.
-Score a student team's spoken pitch on three dimensions (each 1-10):
-- clarity: structure, flow, articulation
-- financials: how well they referenced budget, profit/loss, key numbers
-- persuasiveness: storytelling, hook, conviction
-Then compute overall as the rounded average.
-Return 2-3 concrete strengths and 2-3 specific improvements. Keep tone supportive.`;
+    const systemPrompt = `You are an expert pitch reviewer for student business plans.
+Analyze the pitch transcript and financial data provided.
+Return a JSON object exactly in this format:
+{
+  "scores": {
+    "clarity": number (1-10),
+    "financials": number (1-10),
+    "market": number (1-10),
+    "presentation": number (1-10),
+    "overall": number (1-10)
+  },
+  "feedback": {
+    "strengths": ["string", "string"],
+    "improvements": ["string", "string"],
+    "verdict": "string (final summary)"
+  }
+}
+DO NOT include any text before or after the JSON.`;
 
     const userPrompt = `Team: ${teamName}
 Shop: ${shopName}
@@ -67,30 +78,9 @@ Transcript:
           },
           contents: [{ parts: [{ text: userPrompt }] }],
           generationConfig: {
-            temperature: 0.5,
-            maxOutputTokens: 700,
+            maxOutputTokens: 2048,
+            temperature: 0.7,
             responseMimeType: "application/json",
-            responseJsonSchema: {
-              type: "object",
-              properties: {
-                scores: {
-                  type: "object",
-                  properties: {
-                    clarity: { type: "number" },
-                    financials: { type: "number" },
-                    persuasiveness: { type: "number" },
-                    overall: { type: "number" },
-                  },
-                  required: ["clarity", "financials", "persuasiveness", "overall"],
-                  additionalProperties: false,
-                },
-                strengths: { type: "array", items: { type: "string" } },
-                improvements: { type: "array", items: { type: "string" } },
-                summary: { type: "string" },
-              },
-              required: ["scores", "strengths", "improvements", "summary"],
-              additionalProperties: false,
-            },
           },
         }),
       },
@@ -106,8 +96,13 @@ Transcript:
     const rawText = data.candidates?.[0]?.content?.parts?.find((part: { text?: string }) => typeof part.text === "string")?.text;
 
     if (!rawText) {
-      console.error("Gemini empty response data:", JSON.stringify(data));
-      return res.status(500).json({ error: "Gemini returned an empty response." });
+      console.error("Gemini empty response data:", JSON.stringify(data, null, 2));
+      return res.status(500).json({ error: "Gemini returned an empty response.", debug: data });
+    }
+
+    const finishReason = data.candidates?.[0]?.finishReason;
+    if (finishReason && finishReason !== "STOP") {
+      console.warn("Gemini finishReason:", finishReason);
     }
 
     try {

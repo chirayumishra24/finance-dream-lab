@@ -9,6 +9,7 @@ import {
 } from "recharts";
 import { Mascot } from "./Mascot";
 import { toast } from "sonner";
+import { StepGuide } from "./StepGuide";
 
 export function StepAnalytics() {
   const {
@@ -74,6 +75,8 @@ export function StepAnalytics() {
 
   return (
     <div className="space-y-8 animate-fade-up">
+      <StepGuide step="analytics" />
+
       <header>
         <p className="text-sm font-medium text-primary">Step 4 of 5</p>
         <h2 className="mt-1 text-3xl font-bold tracking-tight">Performance analytics</h2>

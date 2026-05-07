@@ -24,6 +24,16 @@ type RequestBody = {
   scenarios?: Record<string, boolean>;
 };
 
+type ApiRequest = {
+  method?: string;
+  body?: unknown;
+};
+
+type ApiResponse = {
+  setHeader: (name: string, value: string) => void;
+  status: (code: number) => { json: (body: unknown) => void };
+};
+
 function parseGeminiError(status: number, errorText: string) {
   const normalized = errorText.toLowerCase();
 
@@ -39,14 +49,14 @@ function parseGeminiError(status: number, errorText: string) {
   return "Gemini analysis request failed.";
 }
 
-export default async function handler(req: any, res: any) {
+export default async function handler(req: ApiRequest, res: ApiResponse) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
-    const { teamName, shopName, budget, months, scenarios }: RequestBody = req.body ?? {};
+    const { teamName, shopName, budget, months, scenarios } = (req.body ?? {}) as RequestBody;
     const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
     if (!GEMINI_API_KEY) {

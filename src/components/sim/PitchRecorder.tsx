@@ -2,10 +2,48 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Mic, Square, Loader2, RotateCcw, Sparkles, Award } from "lucide-react";
-import { useSim } from "@/lib/simStore";
+import { useSim, type PitchReview } from "@/lib/simStore";
 import { toast } from "sonner";
 
 const PITCH_DURATION = 90; // seconds
+
+interface SpeechRecognitionResultEvent extends Event {
+  resultIndex: number;
+  results: SpeechRecognitionResultList;
+}
+
+interface SpeechRecognitionFailureEvent extends Event {
+  error: string;
+}
+
+interface SpeechRecognitionLike {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onresult: ((event: SpeechRecognitionResultEvent) => void) | null;
+  onerror: ((event: SpeechRecognitionFailureEvent) => void) | null;
+  onend: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+}
+
+type SpeechRecognitionConstructor = new () => SpeechRecognitionLike;
+
+type SpeechRecognitionWindow = Window &
+  typeof globalThis & {
+    SpeechRecognition?: SpeechRecognitionConstructor;
+    webkitSpeechRecognition?: SpeechRecognitionConstructor;
+  };
+
+type ReviewResponse = {
+  error?: string;
+  review?: PitchReview;
+};
+
+function getSpeechRecognition() {
+  const speechWindow = window as SpeechRecognitionWindow;
+  return speechWindow.SpeechRecognition ?? speechWindow.webkitSpeechRecognition;
+}
 
 export function PitchRecorder() {
   const { teamName, shopType, customShop, months, pitch, setPitch } = useSim();
@@ -18,21 +56,20 @@ export function PitchRecorder() {
   const [submitting, setSubmitting] = useState(false);
   const [supported, setSupported] = useState(true);
 
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const transcriptRef = useRef<string>("");
   const startTimeRef = useRef<number>(0);
   const timerRef = useRef<number | null>(null);
 
   useEffect(() => {
-    const SR =
-      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SR = getSpeechRecognition();
     if (!SR) setSupported(false);
     return () => stop(true);
     // eslint-disable-next-line
   }, []);
 
   function start() {
-    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SR = getSpeechRecognition();
     if (!SR) { setSupported(false); return; }
     transcriptRef.current = "";
     setInterim("");
@@ -42,7 +79,7 @@ export function PitchRecorder() {
     rec.continuous = true;
     rec.interimResults = true;
     rec.lang = "en-IN";
-    rec.onresult = (e: any) => {
+    rec.onresult = (e) => {
       let interimText = "";
       for (let i = e.resultIndex; i < e.results.length; i++) {
         const r = e.results[i];
@@ -51,18 +88,26 @@ export function PitchRecorder() {
       }
       setInterim(interimText);
     };
-    rec.onerror = (e: any) => {
+    rec.onerror = (e) => {
       console.warn("recognition error", e);
       if (e.error === "not-allowed") toast.error("Microphone permission denied");
     };
     rec.onend = () => {
       if (recording) {
         // auto-restart if we still want to record (Chrome stops after silence)
-        try { rec.start(); } catch {}
+        try {
+          rec.start();
+        } catch (error) {
+          console.warn("Could not restart speech recognition", error);
+        }
       }
     };
     recognitionRef.current = rec;
-    try { rec.start(); } catch {}
+    try {
+      rec.start();
+    } catch (error) {
+      console.warn("Could not start speech recognition", error);
+    }
 
     startTimeRef.current = Date.now();
     setRecording(true);
@@ -79,7 +124,12 @@ export function PitchRecorder() {
     if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
     const rec = recognitionRef.current;
     if (rec) {
-      try { rec.onend = null; rec.stop(); } catch {}
+      try {
+        rec.onend = null;
+        rec.stop();
+      } catch (error) {
+        console.warn("Could not stop speech recognition", error);
+      }
       recognitionRef.current = null;
     }
     const finalTranscript = (transcriptRef.current + " " + interim).trim();
@@ -103,13 +153,13 @@ export function PitchRecorder() {
         }),
       });
 
-      const data = await apiResponse.json();
+      const data = await apiResponse.json() as ReviewResponse;
       if (!apiResponse.ok) throw new Error(data?.error || "Could not get review");
       if (data?.error) throw new Error(data.error);
       setPitch({ review: data.review });
       toast.success("AI review ready!");
-    } catch (e: any) {
-      toast.error(e.message || "Could not get review");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not get review");
     } finally {
       setSubmitting(false);
     }

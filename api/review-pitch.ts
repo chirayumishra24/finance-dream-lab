@@ -7,6 +7,16 @@ type RequestBody = {
   monthsRun?: number;
 };
 
+type ApiRequest = {
+  method?: string;
+  body?: unknown;
+};
+
+type ApiResponse = {
+  setHeader: (name: string, value: string) => void;
+  status: (code: number) => { json: (body: unknown) => void };
+};
+
 function parseGeminiError(status: number, errorText: string) {
   const normalized = errorText.toLowerCase();
 
@@ -22,14 +32,14 @@ function parseGeminiError(status: number, errorText: string) {
   return "Gemini pitch review request failed.";
 }
 
-export default async function handler(req: any, res: any) {
+export default async function handler(req: ApiRequest, res: ApiResponse) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
-    const { transcript, durationSec, teamName, shopName, finalPL, monthsRun }: RequestBody = req.body ?? {};
+    const { transcript, durationSec, teamName, shopName, finalPL, monthsRun } = (req.body ?? {}) as RequestBody;
     const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
     if (!GEMINI_API_KEY) {

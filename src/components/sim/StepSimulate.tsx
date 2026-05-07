@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { ArrowLeft, ArrowRight, Play, RotateCcw, TrendingUp, TrendingDown, Zap, Gauge, Landmark, Sparkles } from "lucide-react";
 import { Mascot } from "./Mascot";
 import { ChallengeDialog } from "./ChallengeDialog";
+import { StepGuide } from "./StepGuide";
 
 export function StepSimulate() {
   const {
@@ -37,6 +38,8 @@ export function StepSimulate() {
 
   return (
     <div className="space-y-8 animate-fade-up">
+      <StepGuide step="simulate" />
+
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-primary">Step 3 of 5</p>

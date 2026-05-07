@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { useSim, TOTAL_BUDGET, formatINR, formatCompact } from "@/lib/simStore";
+import { useSim, TOTAL_BUDGET, formatINR, formatCompact, type Budget } from "@/lib/simStore";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, AlertTriangle, ShieldCheck, Target, BadgeIndianRupee } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { Mascot } from "./Mascot";
+import { StepGuide } from "./StepGuide";
 
 const FIELDS = [
   { key: "rent",      label: "Rent",                min: 300_000, max: 600_000,  required: true,  color: "hsl(239 84% 60%)" },
@@ -37,6 +38,8 @@ export function StepBudget() {
 
   return (
     <div className="space-y-8 animate-fade-up">
+      <StepGuide step="budget" />
+
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-primary">Step 2 of 5</p>
@@ -73,7 +76,7 @@ export function StepBudget() {
                     <Input
                       type="number"
                       value={v}
-                      onChange={(e) => setBudget({ [f.key]: Math.max(0, Number(e.target.value) || 0) } as any)}
+                      onChange={(e) => setBudget({ [f.key]: Math.max(0, Number(e.target.value) || 0) } as Partial<Budget>)}
                       className="w-36 font-mono text-right"
                     />
                   </div>
@@ -84,7 +87,7 @@ export function StepBudget() {
                     min={0}
                     max={f.max}
                     step={10_000}
-                    onValueChange={([val]) => setBudget({ [f.key]: val } as any)}
+                    onValueChange={([val]) => setBudget({ [f.key]: val } as Partial<Budget>)}
                   />
                 </div>
                 {bad && (

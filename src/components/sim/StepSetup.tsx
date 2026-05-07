@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import type { LucideIcon } from "lucide-react";
 import { useSim, ShopType } from "@/lib/simStore";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,8 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Cake, BookOpen, Gamepad2, ToyBrick, Sparkles, ArrowRight, CheckCircle2, Users2, Wand2 } from "lucide-react";
 import { Mascot } from "./Mascot";
 import { ShopVisual } from "./ShopVisual";
+import { StepGuide } from "./StepGuide";
 
-const SHOPS: { type: ShopType; icon: any; desc: string }[] = [
+const SHOPS: { type: ShopType; icon: LucideIcon; desc: string }[] = [
   { type: "Bakery",      icon: Cake,      desc: "Fresh baked goods, daily inventory" },
   { type: "Bookstore",   icon: BookOpen,  desc: "Curated titles, slow but steady" },
   { type: "Toy Store",   icon: ToyBrick,  desc: "Seasonal peaks, festive demand" },
@@ -24,6 +26,8 @@ export function StepSetup() {
 
   return (
     <div className="space-y-8 animate-fade-up">
+      <StepGuide step="setup" />
+
       <div className="surface-panel rounded-[1.8rem] border border-white/75 p-8 shadow-elev">
         <div className="relative grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
           <div>

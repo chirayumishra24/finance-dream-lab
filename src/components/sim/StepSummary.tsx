@@ -9,6 +9,7 @@ import { ShopVisual } from "./ShopVisual";
 import { toast } from "sonner";
 import { Mascot } from "./Mascot";
 import { PitchRecorder } from "./PitchRecorder";
+import { StepGuide } from "./StepGuide";
 
 export function StepSummary() {
   const { teamName, shopType, customShop, budget, months, reflection, activityAnalysis, setReflection, setStep } = useSim();
@@ -32,6 +33,10 @@ export function StepSummary() {
 
   return (
     <div className="space-y-6 animate-fade-up">
+      <div className="no-print">
+        <StepGuide step="pitch" />
+      </div>
+
       <header className="flex flex-wrap items-end justify-between gap-4 no-print">
         <div>
           <p className="text-sm font-medium text-primary">Step 5 of 5</p>

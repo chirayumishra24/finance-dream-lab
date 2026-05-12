@@ -94,7 +94,6 @@ export function PitchRecorder() {
     };
     rec.onend = () => {
       if (recording) {
-        // auto-restart if we still want to record (Chrome stops after silence)
         try {
           rec.start();
         } catch (error) {
@@ -134,8 +133,13 @@ export function PitchRecorder() {
     }
     const finalTranscript = (transcriptRef.current + " " + interim).trim();
     const dur = Math.min(PITCH_DURATION, Math.floor((Date.now() - startTimeRef.current) / 1000));
-    if (!silent && finalTranscript.length > 0) {
-      setPitch({ transcript: finalTranscript, durationSec: dur });
+    
+    if (!silent) {
+      if (finalTranscript.length > 0) {
+        setPitch({ transcript: finalTranscript, durationSec: dur });
+      } else if (dur > 2) {
+        toast.error("No speech detected. Please check your microphone and try again.");
+      }
     }
   }
 

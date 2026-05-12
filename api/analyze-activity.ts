@@ -1,154 +1,83 @@
-type Budget = {
-  rent: number;
-  inventory: number;
-  staff: number;
-  decor: number;
-  marketing: number;
+import { Request, Response } from "express";
+
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+
+const responseJsonSchema = {
+  type: "object",
+  properties: {
+    status: { type: "string" },
+    totalProfit: { type: "number" },
+    topSellingItem: { type: "string" },
+    customerSentiment: { type: "number" },
+    recommendations: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          type: { type: "string" },
+          text: { type: "string" }
+        },
+        required: ["type", "text"]
+      }
+    }
+  },
+  required: ["status", "totalProfit", "topSellingItem", "customerSentiment", "recommendations"]
 };
 
-type MonthResult = {
-  month: number;
-  baseRevenue: number;
-  revenue: number;
-  expenses: number;
-  profit: number;
-  event: string;
-  misc: number;
-};
-
-type RequestBody = {
-  teamName?: string;
-  shopName?: string;
-  budget?: Budget;
-  months?: MonthResult[];
-  scenarios?: Record<string, boolean>;
-};
-
-type ApiRequest = {
-  method?: string;
-  body?: unknown;
-};
-
-type ApiResponse = {
-  setHeader: (name: string, value: string) => void;
-  status: (code: number) => { json: (body: unknown) => void };
-};
-
-function parseGeminiError(status: number, errorText: string) {
-  const normalized = errorText.toLowerCase();
-
-  if (status === 400) return "Gemini rejected the request. Check the model request format.";
-  if (status === 401 || status === 403) {
-    if (normalized.includes("api key")) return "Gemini API key is invalid, restricted, or not allowed for this request.";
-    return "Gemini access was denied. Check the API key and Google AI project permissions.";
+function parseGeminiError(status: number, text: string) {
+  try {
+    const json = JSON.parse(text);
+    return json.error?.message || `Gemini API Error (${status})`;
+  } catch {
+    return `Gemini API Error (${status})`;
   }
-  if (status === 404) return "Gemini endpoint or model was not found.";
-  if (status === 429) return "Gemini rate limit or quota was reached. Try again later.";
-  if (status >= 500) return "Gemini is temporarily unavailable. Try again in a moment.";
-
-  return "Gemini analysis request failed.";
 }
 
-export default async function handler(req: ApiRequest, res: ApiResponse) {
+export default async function handler(req: Request, res: Response) {
   if (req.method !== "POST") {
-    res.setHeader("Allow", "POST");
     return res.status(405).json({ error: "Method not allowed" });
   }
 
+  if (!GEMINI_API_KEY) {
+    return res.status(500).json({ error: "GEMINI_API_KEY is not configured" });
+  }
+
   try {
-    const { teamName, shopName, budget, months, scenarios } = (req.body ?? {}) as RequestBody;
-    const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+    const { activityId, gameState } = req.body;
 
-    if (!GEMINI_API_KEY) {
-      return res.status(500).json({ error: "GEMINI_API_KEY is not configured." });
-    }
+    const systemPrompt = `You are an AI Business Analyst. 
+Analyze the current game state and provide a summary of performance and actionable recommendations.
+Output MUST be valid JSON matching the provided schema.`;
 
-    if (!months?.length) {
-      return res.status(400).json({ error: "No simulation activity found to analyze." });
-    }
+    const userPrompt = `Activity: ${activityId}
+Game State: ${JSON.stringify(gameState, null, 2)}
 
-    const totalProfit = months.reduce((sum, month) => sum + month.profit, 0);
-    const cumulativeTrend = months.reduce<number[]>((acc, month) => {
-      const previous = acc.at(-1) ?? 0;
-      acc.push(previous + month.profit);
-      return acc;
-    }, []);
-
-    const activitySnapshot = {
-      teamName: teamName || "Team",
-      shopName: shopName || "Dream Shop",
-      budget,
-      scenarios,
-      totalProfit,
-      months: months.map((month, index) => ({
-        ...month,
-        cumulativeProfit: cumulativeTrend[index],
-      })),
-    };
-
-    const systemPrompt = `You are a business simulation analyst and dashboard UX critic.
-Review a student team's six-month shop simulation.
-Return:
-1. a short headline
-2. a concise summary of the performance story
-3. activity insights grounded in the provided numbers
-4. practical next actions the team should take
-5. visual improvements for the analytics/report UI that would make it clearer and more appealing
-
-Rules:
-- Be specific and data-aware.
+Provide analysis and recommendations:
+- Profit should be calculated correctly.
 - Do not invent numbers.
 - Keep each bullet short and actionable.
 - Visual recommendations must focus on charts, hierarchy, color use, spacing, annotations, and storytelling layout.`;
 
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           systemInstruction: {
-            parts: [{ text: systemPrompt }],
+            parts: [{ text: systemPrompt }]
           },
-          contents: [{
-            parts: [{
-              text: `Analyze this simulation activity and propose UI improvements:\n${JSON.stringify(activitySnapshot, null, 2)}`,
-            }],
-          }],
+          contents: [
+            {
+              parts: [{ text: userPrompt }]
+            }
+          ],
           generationConfig: {
-            temperature: 0.6,
-            maxOutputTokens: 900,
             responseMimeType: "application/json",
-            responseJsonSchema: {
-              type: "object",
-              properties: {
-                headline: { type: "string" },
-                summary: { type: "string" },
-                activityInsights: {
-                  type: "array",
-                  items: { type: "string" },
-                },
-                actionRecommendations: {
-                  type: "array",
-                  items: { type: "string" },
-                },
-                visualRecommendations: {
-                  type: "array",
-                  items: { type: "string" },
-                },
-              },
-              required: [
-                "headline",
-                "summary",
-                "activityInsights",
-                "actionRecommendations",
-                "visualRecommendations",
-              ],
-              additionalProperties: false,
-            },
-          },
+            responseSchema: responseJsonSchema
+          }
         }),
-      },
+      }
     );
 
     if (!response.ok) {
@@ -161,10 +90,20 @@ Rules:
     const rawText = data.candidates?.[0]?.content?.parts?.find((part: { text?: string }) => typeof part.text === "string")?.text;
 
     if (!rawText) {
+      console.error("Gemini empty response data:", JSON.stringify(data, null, 2));
       return res.status(500).json({ error: "Gemini returned an empty response." });
     }
 
-    return res.status(200).json({ analysis: JSON.parse(rawText) });
+    try {
+      const cleaned = rawText.replace(/```json\n?/, "").replace(/\n?```/, "").trim();
+      return res.status(200).json({ analysis: JSON.parse(cleaned) });
+    } catch (parseError) {
+      console.error("Failed to parse Gemini JSON. Raw text:", rawText);
+      return res.status(500).json({ 
+        error: "Gemini returned invalid JSON format.",
+        details: parseError instanceof Error ? parseError.message : String(parseError)
+      });
+    }
   } catch (error) {
     console.error("analyze-activity error:", error);
     return res.status(500).json({ error: error instanceof Error ? error.message : "Unknown error" });

@@ -5,7 +5,7 @@ import { Mic, Square, Loader2, RotateCcw, Sparkles, Award } from "lucide-react";
 import { useSim, type PitchReview } from "@/lib/simStore";
 import { toast } from "sonner";
 
-const PITCH_DURATION = 90; // seconds
+const PITCH_DURATION = 89; // 1 minute 29 seconds
 
 interface SpeechRecognitionResultEvent extends Event {
   resultIndex: number;
@@ -114,11 +114,13 @@ export function PitchRecorder() {
     timerRef.current = window.setInterval(() => {
       const s = Math.floor((Date.now() - startTimeRef.current) / 1000);
       setElapsed(s);
-      if (s >= PITCH_DURATION) stop();
+      if (s >= PITCH_DURATION) {
+        stop(false, true); // auto-submit on timeout
+      }
     }, 200);
   }
 
-  function stop(silent = false) {
+  function stop(silent = false, autoSubmit = false) {
     setRecording(false);
     if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
     const rec = recognitionRef.current;
@@ -137,22 +139,25 @@ export function PitchRecorder() {
     if (!silent) {
       if (finalTranscript.length > 0) {
         setPitch({ transcript: finalTranscript, durationSec: dur });
+        if (autoSubmit) {
+          performReview(finalTranscript, dur);
+        }
       } else if (dur > 2) {
         toast.error("No speech detected. Please check your microphone and try again.");
       }
     }
   }
 
-  async function submitForReview() {
-    if (!pitch.transcript) { toast.error("Record a pitch first"); return; }
+  async function performReview(transcript: string, durationSec: number) {
+    if (!transcript) return;
     setSubmitting(true);
     try {
       const apiResponse = await fetch("/api/review-pitch", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          transcript: pitch.transcript,
-          durationSec: pitch.durationSec,
+          transcript,
+          durationSec,
           teamName, shopName, finalPL, monthsRun: months.length,
         }),
       });
@@ -167,6 +172,10 @@ export function PitchRecorder() {
     } finally {
       setSubmitting(false);
     }
+  }
+
+  function submitForReview() {
+    performReview(pitch.transcript, pitch.durationSec);
   }
 
   function reset() {

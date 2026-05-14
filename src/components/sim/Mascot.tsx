@@ -60,21 +60,21 @@ export function Mascot({ message, name = "Penny", speakKey }: MascotProps) {
   };
 
   return (
-    <div className="relative flex items-start gap-4 rounded-2xl border border-primary/15 bg-gradient-to-br from-accent/60 via-background to-background p-4 shadow-soft animate-fade-up">
+    <div className="relative flex items-start gap-3 lg:gap-4 rounded-xl lg:rounded-2xl border border-primary/15 bg-gradient-to-br from-accent/60 via-background to-background p-3 lg:p-4 shadow-soft animate-fade-up">
       <MascotAvatar speaking={speaking} />
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-sm">{name}</span>
-            <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
-              <Sparkles className="h-3 w-3" /> Your business coach
+          <div className="flex flex-col lg:flex-row lg:items-center gap-1 lg:gap-2">
+            <span className="font-semibold text-xs lg:text-sm">{name}</span>
+            <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[8px] lg:text-[10px] font-medium text-primary w-fit">
+              <Sparkles className="h-2 w-2 lg:h-3 lg:w-3" /> Your coach
             </span>
           </div>
           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={toggleMute} title={muted ? "Unmute" : "Mute"}>
             {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
           </Button>
         </div>
-        <p className="mt-1 text-sm text-foreground/85 leading-relaxed">{message}</p>
+        <p className="mt-1 text-xs lg:text-sm text-foreground/85 leading-relaxed">{message}</p>
       </div>
     </div>
   );
@@ -90,7 +90,7 @@ function MascotAvatar({ speaking }: { speaking: boolean }) {
       />
       <svg
         viewBox="0 0 80 80"
-        className={`relative h-16 w-16 drop-shadow-md ${speaking ? "animate-bob" : ""}`}
+        className={`relative h-10 w-10 lg:h-16 lg:w-16 drop-shadow-md ${speaking ? "animate-bob" : ""}`}
         aria-hidden="true"
       >
         <defs>

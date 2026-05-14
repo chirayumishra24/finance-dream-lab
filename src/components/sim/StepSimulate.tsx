@@ -40,13 +40,13 @@ export function StepSimulate() {
     <div className="space-y-8 animate-fade-up">
       <StepGuide step="simulate" />
 
-      <header className="flex flex-wrap items-end justify-between gap-4">
+      <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-primary">Step 3 of 5</p>
-          <h2 className="mt-1 text-3xl font-bold tracking-tight">Run the business</h2>
+          <h2 className="mt-1 text-2xl lg:text-3xl font-bold tracking-tight">Run the business</h2>
           <p className="mt-2 text-muted-foreground">Simulate 6 months of operations one at a time.</p>
         </div>
-        <div className="flex gap-3">
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:gap-3">
           <Tile label="Month" value={`${Math.min(currentMonth, 6)} / 6`} />
           <Tile label="Cumulative P/L" value={formatCompact(cumulative)} tone={cumulative >= 0 ? "success" : "danger"} />
         </div>
@@ -61,7 +61,7 @@ export function StepSimulate() {
         }
       />
 
-      <div className="grid gap-6 lg:grid-cols-[400px,1fr]">
+      <div className="grid gap-6 grid-cols-1 lg:grid-cols-[400px,1fr]">
         {/* Controls */}
         <Card className="surface-panel h-fit space-y-5 rounded-[1.6rem] p-5 shadow-elev">
           <div className="flex items-center justify-between">
@@ -140,7 +140,7 @@ export function StepSimulate() {
                 <h3 className="font-semibold">Monthly Performance</h3>
                 <p className="text-xs text-muted-foreground">Each row appears as you run a month</p>
               </div>
-              <div className="rounded-2xl border border-white/80 bg-white/75 px-4 py-3 text-sm shadow-sm">
+              <div className="hidden sm:block rounded-2xl border border-white/80 bg-white/75 px-4 py-3 text-sm shadow-sm">
                 <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Running story</div>
                 <div className="mt-1 font-semibold">{months.length === 0 ? "No months recorded yet" : finished ? "Simulation complete" : `${months.length} months recorded`}</div>
               </div>

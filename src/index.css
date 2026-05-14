@@ -185,6 +185,12 @@
       0 30px 80px -60px hsl(var(--primary) / 0.75);
     transform: rotateX(62deg) rotateZ(-18deg);
     animation: orbit-breathe 8s ease-in-out infinite;
+    @media (max-width: 768px) {
+      height: 12rem;
+      width: 12rem;
+      right: 5%;
+      top: 5%;
+    }
   }
   .command-board-glow {
     position: absolute;
@@ -267,10 +273,14 @@
     position: absolute;
     bottom: 2.4rem;
     left: 50%;
-    height: 15rem;
-    width: 12rem;
     transform: translateX(-36%) perspective(760px) rotateX(58deg) rotateZ(-32deg);
     transform-style: preserve-3d;
+    @media (max-width: 768px) {
+      height: 10rem;
+      width: 8rem;
+      bottom: 1.5rem;
+      transform: translateX(-50%) perspective(760px) rotateX(58deg) rotateZ(-12deg);
+    }
   }
   .tower-floor {
     position: absolute;
@@ -324,6 +334,10 @@
     padding: 0.75rem 0.85rem;
     backdrop-filter: blur(12px);
     animation: float-depth 6.5s ease-in-out infinite;
+    @media (max-width: 768px) {
+      padding: 0.5rem 0.6rem;
+      font-size: 0.65rem;
+    }
   }
   .insight-card-one {
     bottom: 2.2rem;
@@ -449,20 +463,26 @@
   pointer-events: none;
 }
 
-.depth-grid {
-  position: absolute;
-  left: 50%;
-  top: 15rem;
-  height: 42rem;
-  width: 78rem;
-  transform: translateX(-50%) perspective(900px) rotateX(64deg);
-  transform-origin: center top;
-  background-image:
-    linear-gradient(hsl(var(--primary) / 0.12) 1px, transparent 1px),
-    linear-gradient(90deg, hsl(var(--primary) / 0.12) 1px, transparent 1px);
-  background-size: 58px 58px;
-  mask-image: radial-gradient(ellipse at center, black 0%, black 42%, transparent 72%);
-}
+  .depth-grid {
+    position: absolute;
+    left: 50%;
+    top: 15rem;
+    height: 42rem;
+    width: 78rem;
+    transform: translateX(-50%) perspective(900px) rotateX(64deg);
+    transform-origin: center top;
+    background-image:
+      linear-gradient(hsl(var(--primary) / 0.12) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--primary) / 0.12) 1px, transparent 1px);
+    background-size: 58px 58px;
+    mask-image: radial-gradient(ellipse at center, black 0%, black 42%, transparent 72%);
+    @media (max-width: 768px) {
+      width: 100%;
+      height: 20rem;
+      top: 5rem;
+      background-size: 30px 30px;
+    }
+  }
 
 .light-beam {
   position: absolute;
@@ -488,25 +508,28 @@
   transform: rotate(26deg);
 }
 
-.floating-depth-card {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  border: 1px solid hsl(0 0% 100% / 0.72);
-  border-radius: 1.1rem;
-  background: hsl(0 0% 100% / 0.58);
-  box-shadow: 0 28px 70px -42px hsl(222 31% 14% / 0.45);
-  color: hsl(var(--primary));
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.16em;
-  padding: 0.9rem 1rem;
-  text-transform: uppercase;
-  transform-style: preserve-3d;
-  backdrop-filter: blur(14px);
-  animation: float-depth 7s ease-in-out infinite;
-}
+  .floating-depth-card {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    border: 1px solid hsl(0 0% 100% / 0.72);
+    border-radius: 1.1rem;
+    background: hsl(0 0% 100% / 0.58);
+    box-shadow: 0 28px 70px -42px hsl(222 31% 14% / 0.45);
+    color: hsl(var(--primary));
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    padding: 0.9rem 1rem;
+    text-transform: uppercase;
+    transform-style: preserve-3d;
+    backdrop-filter: blur(14px);
+    animation: float-depth 7s ease-in-out infinite;
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
 
 .floating-depth-card-one {
   left: 5%;

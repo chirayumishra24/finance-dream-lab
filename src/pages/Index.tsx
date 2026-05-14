@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   CircleDollarSign,
   LayoutDashboard,
+  Maximize,
   PlayCircle,
   Presentation,
   RotateCcw,
@@ -57,6 +58,18 @@ const Index = () => {
   const shopLabel = shopType === "Custom" ? customShop : shopType;
   const currentMeta = STEP_META[step];
 
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch((err) => {
+        console.error(`Error attempting to enable full-screen mode: ${err.message}`);
+      });
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  };
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-surface">
       <VisualBackdrop />
@@ -68,51 +81,70 @@ const Index = () => {
       <div className="ambient-orb left-[24%] top-[34%] h-72 w-72 bg-primary/10" />
 
       <header className="sticky top-0 z-30 border-b border-white/60 bg-background/78 backdrop-blur-xl no-print">
-        <div className="container flex min-h-20 items-center justify-between gap-4 py-4">
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-hero shadow-soft">
-              <Store className="h-5 w-5 text-primary-foreground" />
+        <div className="container flex min-h-16 lg:min-h-20 items-center justify-between gap-4 py-3 lg:py-4">
+          <div className="flex items-center gap-3 lg:gap-4">
+            <div className="flex h-10 w-10 lg:h-12 lg:w-12 items-center justify-center rounded-xl lg:rounded-2xl bg-gradient-hero shadow-soft">
+              <Store className="h-4 w-4 lg:h-5 lg:w-5 text-primary-foreground" />
             </div>
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/10 bg-white/80 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
-                <LayoutDashboard className="h-3 w-3" />
+              <div className="inline-flex items-center gap-1.5 lg:gap-2 rounded-full border border-primary/10 bg-white/80 px-2 lg:px-2.5 py-0.5 lg:py-1 text-[9px] lg:text-[11px] font-semibold uppercase tracking-[0.15em] lg:tracking-[0.2em] text-primary whitespace-nowrap">
+                <LayoutDashboard className="h-2.5 w-2.5 lg:h-3 lg:w-3" />
                 Dream Shop Dashboard
               </div>
-              <h1 className="mt-2 text-lg font-bold leading-none">Design Your Dream Shop</h1>
-              <p className="mt-1 text-xs text-muted-foreground">Minimal simulator workspace for classroom business strategy</p>
+              <h1 className="mt-1 text-sm lg:text-lg font-bold leading-none truncate">Dream Shop Simulator</h1>
+
             </div>
           </div>
 
-          <div className="hidden items-center gap-3 lg:flex">
-            <HeaderPill icon={<Wallet className="h-3.5 w-3.5" />} label="Budget" value="₹20,00,000" />
-            <HeaderPill icon={<TrendingUp className="h-3.5 w-3.5" />} label="Sprint" value={`Step ${step + 1} / 5`} />
+          <div className="flex items-center gap-2 lg:gap-3">
+            <div className="hidden lg:flex items-center gap-3">
+              <HeaderPill icon={<Wallet className="h-3.5 w-3.5" />} label="Budget" value="₹20,00,000" />
+              <HeaderPill icon={<TrendingUp className="h-3.5 w-3.5" />} label="Sprint" value={`Step ${step + 1} / 5`} />
+            </div>
             {teamName && (
-              <div className="surface-panel rounded-2xl border border-white/80 px-4 py-3 text-sm shadow-soft">
-                <div className="font-semibold leading-none">{teamName}</div>
-                <div className="mt-1 text-xs text-muted-foreground">{shopLabel}</div>
+              <div className="surface-panel rounded-xl lg:rounded-2xl border border-white/80 px-3 py-2 lg:px-4 lg:py-3 text-xs lg:text-sm shadow-soft">
+                <div className="font-semibold leading-none truncate max-w-[80px] lg:max-w-none">{teamName}</div>
+                <div className="mt-0.5 lg:mt-1 text-[10px] lg:text-xs text-muted-foreground truncate">{shopLabel}</div>
               </div>
             )}
-            <Button variant="ghost" size="sm" onClick={resetSim} title="Reset simulation" className="rounded-xl">
-              <RotateCcw className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-1.5 lg:gap-2">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={toggleFullscreen} 
+                title="Toggle fullscreen" 
+                className="h-9 w-9 rounded-xl hover:bg-white/40 active:scale-95 transition-all"
+              >
+                <Maximize className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={resetSim} 
+                title="Reset simulation" 
+                className="h-9 w-9 rounded-xl hover:bg-white/40 active:scale-95 transition-all text-destructive"
+              >
+                <RotateCcw className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
 
-        <div className="container pb-4">
+        <div className="container pb-3 lg:pb-4 overflow-hidden">
           <Stepper />
         </div>
       </header>
 
       <main className="container relative z-10 max-w-7xl py-8 md:py-10">
         <section className="mb-8 grid gap-4 lg:grid-cols-[1.35fr_0.65fr]">
-          <div className="hero-console surface-panel flex h-full min-h-[620px] flex-col rounded-[2.1rem] border border-white/75 p-7 shadow-elev md:p-8">
+          <div className="hero-console surface-panel flex h-full lg:min-h-[620px] flex-col rounded-[1.5rem] lg:rounded-[2.1rem] border border-white/75 p-5 lg:p-8 shadow-elev">
             <div className="relative">
-              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary/10 bg-white/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-primary">
+              <div className="mb-4 lg:mb-5 inline-flex items-center gap-2 rounded-full border border-primary/10 bg-white/70 px-3 py-1 text-[10px] lg:text-[11px] font-semibold uppercase tracking-[0.24em] text-primary">
                 <span className="h-2 w-2 rounded-full bg-success shadow-glow" />
                 {currentMeta.eyebrow}
               </div>
-              <h2 className="max-w-3xl text-3xl font-bold leading-tight md:text-5xl">{currentMeta.title}</h2>
-              <p className="mt-4 max-w-2xl text-sm leading-6 text-muted-foreground md:text-base">
+              <h2 className="max-w-3xl text-2xl lg:text-5xl font-bold leading-tight">{currentMeta.title}</h2>
+              <p className="mt-3 lg:mt-4 max-w-2xl text-xs lg:text-base leading-relaxed text-muted-foreground">
                 {currentMeta.detail}
               </p>
             </div>
@@ -194,12 +226,12 @@ function HeroCommandCanvas({ step, teamName, shopLabel }: { step: number; teamNa
   ];
 
   return (
-    <div className="command-board mt-8 flex-1">
-      <div className="command-board-orbit" />
+    <div className="command-board mt-6 lg:mt-8 flex-1">
+      <div className="command-board-orbit hidden lg:block" />
       <div className="command-board-glow command-board-glow-one" />
       <div className="command-board-glow command-board-glow-two" />
 
-      <div className="relative grid h-full gap-5 lg:grid-cols-[0.95fr_1.05fr]">
+      <div className="relative grid h-full gap-4 lg:gap-5 lg:grid-cols-[0.95fr_1.05fr]">
         <div className="strategy-map rounded-[1.6rem] border border-white/70 p-5">
           <div className="flex items-center justify-between gap-3">
             <div>

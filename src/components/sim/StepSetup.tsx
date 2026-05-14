@@ -28,16 +28,16 @@ export function StepSetup() {
     <div className="space-y-8 animate-fade-up">
       <StepGuide step="setup" />
 
-      <div className="surface-panel rounded-[1.8rem] border border-white/75 p-8 shadow-elev">
+      <div className="surface-panel rounded-[1.8rem] border border-white/75 p-5 lg:p-8 shadow-elev">
         <div className="relative grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
           <div>
             <p className="text-sm font-medium text-primary">Step 1 of 5</p>
-            <h2 className="mt-1 text-4xl font-bold tracking-tight">Set up your venture</h2>
+            <h2 className="mt-1 text-2xl lg:text-4xl font-bold tracking-tight">Set up your venture</h2>
             <p className="mt-3 max-w-xl text-muted-foreground">
               Name your team, choose a shop identity, and set the tone for the next six months of decisions.
             </p>
 
-            <div className="mt-6 grid gap-3 sm:grid-cols-3">
+            <div className="mt-6 grid gap-3 grid-cols-1 sm:grid-cols-3">
               <IntroChip icon={<Users2 className="h-4 w-4" />} title="Team Identity" text="Give the simulator a believable team name." />
               <IntroChip icon={<Wand2 className="h-4 w-4" />} title="Shop Concept" text="Choose the business flavor that shapes the story." />
               <IntroChip icon={<CheckCircle2 className="h-4 w-4" />} title="Ready Check" text="Complete both fields to unlock the budget step." />
@@ -82,7 +82,7 @@ export function StepSetup() {
 
       <div>
         <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">Choose a shop</h3>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {SHOPS.map(({ type, icon: Icon, desc }) => {
             const active = shopType === type;
             return (

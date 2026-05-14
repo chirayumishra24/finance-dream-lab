@@ -37,16 +37,18 @@ export function StepSummary() {
         <StepGuide step="pitch" />
       </div>
 
-      <header className="flex flex-wrap items-end justify-between gap-4 no-print">
+      <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 no-print">
         <div>
           <p className="text-sm font-medium text-primary">Step 5 of 5</p>
-          <h2 className="mt-1 text-3xl font-bold tracking-tight">Final presentation</h2>
+          <h2 className="mt-1 text-2xl lg:text-3xl font-bold tracking-tight">Final presentation</h2>
           <p className="mt-2 text-muted-foreground">Review your business performance and reflect.</p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={handleFullscreen}><Maximize2 className="mr-2 h-4 w-4" /> Fullscreen</Button>
-          <Button variant="outline" onClick={handleShare}><Share2 className="mr-2 h-4 w-4" /> Share</Button>
-          <Button onClick={() => window.print()} className="bg-gradient-primary shadow-glow">
+        <div className="flex flex-col sm:flex-row gap-2">
+          <div className="flex gap-2">
+            <Button variant="outline" className="flex-1" onClick={handleFullscreen}><Maximize2 className="mr-2 h-4 w-4" /> Fullscreen</Button>
+            <Button variant="outline" className="flex-1" onClick={handleShare}><Share2 className="mr-2 h-4 w-4" /> Share</Button>
+          </div>
+          <Button onClick={() => window.print()} className="bg-gradient-primary shadow-glow w-full sm:w-auto">
             <Printer className="mr-2 h-4 w-4" /> Export PDF
           </Button>
         </div>
@@ -64,14 +66,14 @@ export function StepSummary() {
       </div>
 
       <div id="summary-doc" className="space-y-6 bg-background p-6 rounded-xl">
-        <div className="grid gap-6 lg:grid-cols-[0.35fr_0.65fr]">
+        <div className="grid gap-6 grid-cols-1 lg:grid-cols-[0.35fr_0.65fr]">
           <ShopVisual />
           <Card className="overflow-hidden p-0 shadow-elev flex flex-col justify-center">
             <div className="bg-gradient-primary p-8 text-primary-foreground h-full">
               <div className="text-xs font-semibold uppercase tracking-[0.2em] opacity-80">Final Report</div>
-              <h1 className="mt-2 text-4xl font-bold tracking-tight">{teamName || "Team"}</h1>
+              <h1 className="mt-2 text-2xl lg:text-4xl font-bold tracking-tight">{teamName || "Team"}</h1>
               <p className="mt-1 text-lg opacity-90">{shopName}</p>
-              <div className="mt-6 flex flex-wrap gap-6">
+              <div className="mt-6 grid grid-cols-2 sm:flex sm:flex-wrap gap-4 sm:gap-6">
                 <Stat label="Net Result" value={formatINR(total)} />
                 <Stat label="Months Run" value={`${months.length} / 6`} />
                 <Stat label="Total Budget" value={formatCompact(2_000_000)} />
@@ -80,7 +82,7 @@ export function StepSummary() {
           </Card>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
           <Card className="p-6 shadow-soft">
             <h3 className="mb-4 font-semibold">Budget Allocation</h3>
             <ul className="space-y-2 text-sm">

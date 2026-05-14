@@ -40,13 +40,13 @@ export function StepBudget() {
     <div className="space-y-8 animate-fade-up">
       <StepGuide step="budget" />
 
-      <header className="flex flex-wrap items-end justify-between gap-4">
+      <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-primary">Step 2 of 5</p>
-          <h2 className="mt-1 text-3xl font-bold tracking-tight">Allocate your budget</h2>
+          <h2 className="mt-1 text-2xl lg:text-3xl font-bold tracking-tight">Allocate your budget</h2>
           <p className="mt-2 text-muted-foreground">Distribute ₹20,00,000 across operational categories.</p>
         </div>
-        <div className="flex gap-3">
+        <div className="grid grid-cols-3 gap-2 sm:flex sm:gap-3">
           <StatTile label="Total Budget" value={formatCompact(TOTAL_BUDGET)} />
           <StatTile label="Allocated"    value={formatCompact(allocated)} tone={over ? "danger" : "default"} />
           <StatTile label="Remaining"    value={formatCompact(remaining)} tone={over ? "danger" : remaining === 0 ? "success" : "default"} />
@@ -58,7 +58,7 @@ export function StepBudget() {
         message="Now the fun part — money! You have twenty lakh rupees. Spread it wisely between rent, inventory, staff, decoration, and marketing. Stay within each range, and don't overshoot the total."
       />
 
-      <div className="grid gap-6 lg:grid-cols-[1fr,380px]">
+      <div className="grid gap-6 grid-cols-1 lg:grid-cols-[1fr,380px]">
         <div className="space-y-4">
           {FIELDS.map(f => {
             const v = budget[f.key];
@@ -77,7 +77,7 @@ export function StepBudget() {
                       type="number"
                       value={v}
                       onChange={(e) => setBudget({ [f.key]: Math.max(0, Number(e.target.value) || 0) } as Partial<Budget>)}
-                      className="w-36 font-mono text-right"
+                      className="w-24 lg:w-36 font-mono text-right"
                     />
                   </div>
                 </div>

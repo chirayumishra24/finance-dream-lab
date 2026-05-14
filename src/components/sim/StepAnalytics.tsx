@@ -79,7 +79,7 @@ export function StepAnalytics() {
 
       <header>
         <p className="text-sm font-medium text-primary">Step 4 of 5</p>
-        <h2 className="mt-1 text-3xl font-bold tracking-tight">Performance analytics</h2>
+        <h2 className="mt-1 text-2xl lg:text-3xl font-bold tracking-tight">Performance analytics</h2>
         <p className="mt-2 text-muted-foreground">Profit trajectory and cumulative position over the simulated period.</p>
       </header>
 
@@ -88,7 +88,7 @@ export function StepAnalytics() {
         message="Time to read the story your numbers tell. Look at when you peaked, when you struggled, and whether you reached break-even. These insights will fuel your final pitch."
       />
 
-      <div className="grid gap-4 sm:grid-cols-4">
+      <div className="grid gap-2 grid-cols-2 sm:grid-cols-4 sm:gap-4">
         <KPI label="Final P/L" value={formatCompact(total)} tone={total >= 0 ? "success" : "danger"} />
         <KPI label="Best Month" value={best ? `M${best.month} · ${formatCompact(best.profit)}` : "—"} tone="success" />
         <KPI label="Worst Month" value={worst ? `M${worst.month} · ${formatCompact(worst.profit)}` : "—"} tone="danger" />
@@ -98,7 +98,7 @@ export function StepAnalytics() {
       <Card className="surface-panel rounded-[1.5rem] p-5 shadow-soft">
         <h3 className="mb-1 font-semibold">Monthly Profit / Loss</h3>
         <p className="mb-4 text-xs text-muted-foreground">Bars indicate per-month result; line shows cumulative position</p>
-        <div className="h-80">
+        <div className="h-64 lg:h-80">
           <ResponsiveContainer>
             <ComposedChart data={data} margin={{ top: 10, right: 16, left: 0, bottom: 0 }}>
               <defs>
@@ -127,7 +127,7 @@ export function StepAnalytics() {
 
       <Card className="surface-panel rounded-[1.5rem] p-5 shadow-soft">
         <h3 className="mb-4 font-semibold">Revenue vs Expenses</h3>
-        <div className="h-64">
+        <div className="h-48 lg:h-64">
           <ResponsiveContainer>
             <LineChart data={data} margin={{ top: 10, right: 16, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />

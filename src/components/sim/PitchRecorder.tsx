@@ -234,30 +234,12 @@ export function PitchRecorder() {
                 </button>
                 
                 <div className="flex-1 space-y-2">
-                  <div className="flex items-center gap-3">
-                    <Button
-                      onClick={recording ? () => stop() : start}
-                      variant={recording ? "destructive" : "default"}
-                      className={recording ? "bg-red-600 hover:bg-red-700 text-white" : "bg-gradient-primary shadow-glow"}
-                    >
-                      {recording ? (
-                        <>
-                          <Square className="mr-2 h-4 w-4" /> Stop Recording
-                        </>
-                      ) : (
-                        <>
-                          <Mic className="mr-2 h-4 w-4" /> Start Recording
-                        </>
-                      )}
-                    </Button>
-                    <span className={`text-xs font-medium ${recording ? "text-danger animate-pulse" : "text-muted-foreground"}`}>
-                      {recording ? `● Recording — ${remaining}s left` : pitch.transcript ? "Recorded" : "Ready"}
-                    </span>
-                  </div>
-                  
                   <div className="flex items-baseline justify-between">
                     <span className="font-mono text-2xl font-semibold tabular-nums">
                       {fmt(elapsed)} <span className="text-sm text-muted-foreground">/ {fmt(PITCH_DURATION)}</span>
+                    </span>
+                    <span className={`text-xs font-medium ${recording ? "text-danger animate-pulse" : "text-muted-foreground"}`}>
+                      {recording ? `● Recording — ${remaining}s left` : pitch.transcript ? "Recorded" : "Ready"}
                     </span>
                   </div>
                   
@@ -287,6 +269,23 @@ export function PitchRecorder() {
             )}
 
             <div className="flex flex-wrap items-center gap-2">
+              <Button
+                onClick={recording ? () => stop() : start}
+                variant={recording ? "destructive" : "default"}
+                className={recording ? "bg-red-600 hover:bg-red-700 text-white animate-pulse" : "bg-gradient-primary shadow-glow"}
+                disabled={submitting}
+              >
+                {recording ? (
+                  <>
+                    <Square className="mr-2 h-4 w-4" /> Stop Recording
+                  </>
+                ) : (
+                  <>
+                    <Mic className="mr-2 h-4 w-4" /> Start Recording
+                  </>
+                )}
+              </Button>
+
               <Button
                 onClick={submitForReview}
                 disabled={!pitch.transcript || submitting || recording}

@@ -209,31 +209,64 @@ export function PitchRecorder() {
           </div>
         ) : (
           <>
-            <div className="flex items-center gap-4">
-              <button
-                onClick={recording ? () => stop() : start}
-                className={`relative flex h-20 w-20 items-center justify-center rounded-full text-primary-foreground shadow-glow transition-transform hover:scale-105 ${
-                  recording ? "bg-gradient-danger" : "bg-gradient-primary"
-                }`}
-                aria-label={recording ? "Stop recording" : "Start recording"}
-              >
-                {recording && <span className="absolute inset-0 rounded-full bg-danger/40 animate-pulse-ring" />}
-                {recording ? <Square className="h-7 w-7" /> : <Mic className="h-8 w-8" />}
-              </button>
-              <div className="flex-1">
-                <div className="flex items-baseline justify-between">
-                  <span className="font-mono text-2xl font-semibold tabular-nums">
-                    {fmt(elapsed)} <span className="text-sm text-muted-foreground">/ {fmt(PITCH_DURATION)}</span>
-                  </span>
-                  <span className={`text-xs font-medium ${recording ? "text-danger" : "text-muted-foreground"}`}>
-                    {recording ? `● Recording — ${remaining}s left` : pitch.transcript ? "Recorded" : "Ready"}
-                  </span>
-                </div>
-                <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-secondary">
-                  <div
-                    className={`h-full transition-all ${recording ? "bg-gradient-danger" : "bg-gradient-primary"}`}
-                    style={{ width: `${pct}%` }}
-                  />
+            <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 text-sm space-y-2">
+              <div className="font-semibold text-primary flex items-center gap-1.5">
+                <Mic className="h-4 w-4" /> Recording Instructions:
+              </div>
+              <ol className="list-decimal pl-5 space-y-1 text-muted-foreground text-xs">
+                <li>Click the <strong className="text-foreground">Start Recording</strong> button below.</li>
+                <li>Give the browser permission to use your microphone when prompted.</li>
+                <li>Speak clearly into your microphone; the audio will be recorded and transcribed live.</li>
+              </ol>
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={recording ? () => stop() : start}
+                  className={`relative flex h-20 w-20 shrink-0 items-center justify-center rounded-full text-primary-foreground shadow-glow transition-transform hover:scale-105 ${
+                    recording ? "bg-gradient-danger" : "bg-gradient-primary"
+                  }`}
+                  aria-label={recording ? "Stop recording" : "Start recording"}
+                >
+                  {recording && <span className="absolute inset-0 rounded-full bg-danger/40 animate-pulse-ring" />}
+                  {recording ? <Square className="h-7 w-7" /> : <Mic className="h-8 w-8" />}
+                </button>
+                
+                <div className="flex-1 space-y-2">
+                  <div className="flex items-center gap-3">
+                    <Button
+                      onClick={recording ? () => stop() : start}
+                      variant={recording ? "destructive" : "default"}
+                      className={recording ? "bg-red-600 hover:bg-red-700 text-white" : "bg-gradient-primary shadow-glow"}
+                    >
+                      {recording ? (
+                        <>
+                          <Square className="mr-2 h-4 w-4" /> Stop Recording
+                        </>
+                      ) : (
+                        <>
+                          <Mic className="mr-2 h-4 w-4" /> Start Recording
+                        </>
+                      )}
+                    </Button>
+                    <span className={`text-xs font-medium ${recording ? "text-danger animate-pulse" : "text-muted-foreground"}`}>
+                      {recording ? `● Recording — ${remaining}s left` : pitch.transcript ? "Recorded" : "Ready"}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-baseline justify-between">
+                    <span className="font-mono text-2xl font-semibold tabular-nums">
+                      {fmt(elapsed)} <span className="text-sm text-muted-foreground">/ {fmt(PITCH_DURATION)}</span>
+                    </span>
+                  </div>
+                  
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
+                    <div
+                      className={`h-full transition-all ${recording ? "bg-gradient-danger" : "bg-gradient-primary"}`}
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
